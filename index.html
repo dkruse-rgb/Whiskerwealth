@@ -18,9 +18,10 @@ fetch('https://raw.githubusercontent.com/dkruse-rgb/Whiskerwealth/0b1a50501e34be
   .then(r=>r.text())
   .then(html=>{
     html = html.replace(/function perkBadge\(q\)\{[\s\S]*?\}\nfunction pMult/, "function perkBadge(q){let pm=ownedProfitPerk(q),sm=ownedSpeedPerk(q),parts=[];if(pm>1)parts.push('💰×'+pm);if(sm>1)parts.push('⚡×'+sm);return parts.length?' · '+parts.join(' · '):''}\nfunction pMult");
+    html = html.replace(`'+(o.run?'Making purrfits… '+Math.floor(pct)+'%':'Click paw to earn '+fmt(rev(i)))+'`, `'+(o.run?('+'+fmt(rev(i))+' · '+Math.floor(pct)+'%'):('Tap paw · +'+fmt(rev(i))))+'`);
     html = html.replace('</style>', `
 <style>
-.info h3{gap:10px!important;align-items:center!important}.owned{font-size:11px!important;padding:6px 11px!important;gap:3px!important;flex-wrap:nowrap!important;line-height:1.1!important;max-width:none!important;white-space:nowrap!important}.perk{display:inline!important;background:transparent!important;padding:0!important;color:inherit!important;font-size:inherit!important}.biz{grid-template-columns:76px 1fr 168px!important}.buy{min-width:0!important}@media(max-width:700px){.biz{grid-template-columns:58px 1fr!important}.info h3{font-size:17px!important}.owned{font-size:10px!important;padding:5px 9px!important}.barText{font-size:11px!important}}
+.info h3{gap:10px!important;align-items:center!important}.owned{font-size:11px!important;padding:6px 11px!important;gap:3px!important;flex-wrap:nowrap!important;line-height:1.1!important;max-width:none!important;white-space:nowrap!important}.perk{display:inline!important;background:transparent!important;padding:0!important;color:inherit!important;font-size:inherit!important}.biz{grid-template-columns:76px 1fr 168px!important}.buy{min-width:0!important}.barText{font-size:12px!important;letter-spacing:.1px!important}@media(max-width:700px){.biz{grid-template-columns:58px 1fr!important}.info h3{font-size:17px!important}.owned{font-size:10px!important;padding:5px 9px!important}.barText{font-size:11px!important}}
 </style>
 </style>`);
     document.open();document.write(html);document.close();
