@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Whisker Wealth</title>
+<meta name="description" content="Whisker Wealth is a cozy kitty-themed idle tycoon game. Build cat businesses, hire managers, buy upgrades, and chase purrposterous profits.">
+<meta name="theme-color" content="#1b1324">
+<style>
+:root{--ink:#1b1324;--ink2:#271a33;--paper:#fff5f8;--muted:#f2d7e4;--pink:#ff86b7;--pink2:#ff5aa2;--gold:#ffd86b;--green:#61c993;--line:rgba(255,255,255,.18);--shadow:rgba(0,0,0,.34)}*{box-sizing:border-box}html,body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(255,134,183,.22),transparent 32%),radial-gradient(circle at 90% 12%,rgba(201,167,255,.18),transparent 28%),linear-gradient(180deg,#21172b,#100d16);color:var(--paper);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow-x:hidden}body:before{content:"";position:fixed;inset:0;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:22px 22px;opacity:.25;pointer-events:none}.floaters{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}.floater{position:absolute;bottom:-80px;opacity:.22;animation:floatUp linear infinite;user-select:none}@keyframes floatUp{0%{transform:translateY(0) translateX(0) rotate(0)}100%{transform:translateY(-115vh) translateX(var(--drift)) rotate(360deg)}}.app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:18px}.hero{position:relative;overflow:hidden;border:3px solid rgba(255,216,107,.48);border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.05));box-shadow:0 12px 0 rgba(255,134,183,.35),0 30px 70px var(--shadow);padding:20px;margin-bottom:18px}.hero:before,.hero:after{content:"🐾";position:absolute;font-size:74px;opacity:.09;transform:rotate(-18deg)}.hero:before{right:22px;top:-10px}.hero:after{left:22px;bottom:-22px}.heroRow{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}.brand h1{margin:0;color:var(--gold);font-size:clamp(36px,7vw,72px);line-height:.88;letter-spacing:1px;text-shadow:4px 4px 0 rgba(255,90,162,.55)}.brand h1 span{color:var(--pink)}.tag{margin-top:10px;color:#ffd9ea;font-weight:700}.cashBox{background:var(--paper);color:var(--ink);border:2px solid var(--gold);border-radius:22px;min-width:min(100%,315px);padding:16px 18px;text-align:right;box-shadow:inset 0 0 0 4px #fff,inset 0 0 0 6px rgba(255,134,183,.5)}.cashBox small{display:block;color:var(--pink2);font-weight:900;letter-spacing:2px}.cashBox strong{display:block;font-size:34px;line-height:1.05}.cashBox span{color:#277a55;font-weight:900}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:20px 0}.stat{background:rgba(255,255,255,.08);border:1px solid var(--line);border-left:5px solid var(--pink);border-radius:18px;padding:12px}.stat small{display:block;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;font-size:11px;font-weight:900}.stat strong{font-size:22px}.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:16px 0}.btn{border:2px solid rgba(255,255,255,.28);background:linear-gradient(180deg,var(--gold),#ffc4dc);color:var(--ink);border-radius:999px;padding:10px 14px;font-weight:950;cursor:pointer;box-shadow:3px 3px 0 rgba(0,0,0,.25);transition:.12s transform,.12s filter}.btn:before{content:"🐾 ";font-weight:400}.btn:hover:not(:disabled){transform:translate(-1px,-1px);filter:brightness(1.04)}.btn:active:not(:disabled){transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.25)}.btn.ghost{background:rgba(255,255,255,.08);color:var(--paper);border-color:var(--gold)}.btn.ghost.active{background:linear-gradient(180deg,var(--pink),var(--gold));color:var(--ink)}.btn.danger{background:linear-gradient(180deg,#ff79ad,#ff4f96);color:white}.btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}.businesses{display:flex;flex-direction:column;gap:14px}.biz{display:grid;grid-template-columns:82px 1fr 190px;gap:14px;align-items:center;background:var(--paper);color:var(--ink);border:2px solid rgba(255,216,107,.72);border-radius:24px;padding:14px;box-shadow:6px 6px 0 rgba(255,134,183,.52);transition:.12s transform,.12s box-shadow}.biz:not(.locked):hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 rgba(255,134,183,.62)}.biz.locked{background:#38243f;color:#f4dce7;border-color:#72537c;box-shadow:6px 6px 0 #201525}.icon{width:72px;height:72px;border-radius:24px;display:grid;place-items:center;background:linear-gradient(180deg,#2a1732,#1b1324);border:3px solid var(--gold);font-size:36px;cursor:pointer;position:relative;user-select:none}.icon.managed:after{content:"👔";position:absolute;right:-8px;bottom:-8px;background:var(--green);border:2px solid white;border-radius:50%;width:25px;height:25px;display:grid;place-items:center;font-size:12px}.icon:active{transform:scale(.94)}.info h3{margin:0 0 8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:18px}.owned{font-size:12px;border-radius:999px;background:#2a1830;color:var(--gold);padding:4px 10px;white-space:nowrap}.bar{height:30px;border:2px solid var(--ink);background:#f1dce8;border-radius:999px;overflow:hidden;position:relative}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .08s linear}.barText{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:900;text-shadow:0 0 5px white}.buy{text-align:left}.buy small{display:block;letter-spacing:1.5px;color:#7f4964;text-transform:uppercase}.buy b{display:block;font-size:16px}.modalBack{display:none;position:fixed;inset:0;background:rgba(0,0,0,.74);backdrop-filter:blur(5px);z-index:20;align-items:center;justify-content:center;padding:16px}.modalBack.show{display:flex}.modal{width:min(820px,100%);max-height:88vh;overflow:auto;background:var(--ink);border:3px solid var(--gold);border-radius:26px;box-shadow:0 0 0 7px rgba(255,134,183,.35),0 24px 70px rgba(0,0,0,.55)}.modalHead{display:flex;justify-content:space-between;align-items:center;padding:18px;border-bottom:2px solid rgba(255,216,107,.5);background:#271a33}.modalHead h2{margin:0;color:var(--gold);text-shadow:2px 2px 0 var(--pink2)}.list{display:grid;gap:12px;padding:16px}.card{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--paper);color:var(--ink);border:2px solid var(--gold);border-radius:20px;padding:14px;box-shadow:4px 4px 0 rgba(255,134,183,.5)}.card.done{background:#ffe8f2;border-color:var(--pink)}.card.locked{background:#39263f;color:#f4dce7;border-color:#6f5276}.card b{font-size:15px}.card small{opacity:.82}.toast{position:fixed;left:50%;bottom:22px;z-index:30;transform:translate(-50%,120px);opacity:0;background:linear-gradient(180deg,var(--gold),#ffc4dc);color:var(--ink);border:2px solid white;border-radius:999px;padding:12px 18px;font-weight:950;box-shadow:5px 5px 0 rgba(0,0,0,.35);transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}@media(max-width:700px){.app{padding:10px}.biz{grid-template-columns:62px 1fr}.icon{width:58px;height:58px;font-size:29px}.buy{grid-column:1/-1}.cashBox{text-align:left}.brand h1{font-size:42px}.hero{border-radius:20px;padding:16px}}
+</style>
+</head>
+<body>
+<div class="floaters" id="floaters"></div>
+<div class="app">
+  <header class="hero">
+    <div class="heroRow">
+      <div class="brand"><h1><span>Whisker</span> Wealth</h1><div class="tag">An idle pursuit of purrposterous fortune.</div></div>
+      <div class="cashBox"><small>★ PURRFITS ★</small><strong id="cash">$0</strong><span id="rate">+$0/sec</span></div>
+    </div>
+  </header>
+  <section class="stats">
+    <div class="stat"><small>Total Earned</small><strong id="earned">$0</strong></div>
+    <div class="stat"><small>Businesses</small><strong id="bizTotal">0</strong></div>
+    <div class="stat"><small>Patrons</small><strong id="investors">0</strong></div>
+    <div class="stat"><small>Clicks</small><strong id="clicks">0</strong></div>
+  </section>
+  <nav class="controls">
+    <button class="btn ghost active" data-mult="1">Buy ×1</button>
+    <button class="btn ghost" data-mult="10">×10</button>
+    <button class="btn ghost" data-mult="100">×100</button>
+    <button class="btn ghost" data-mult="max">MAX</button>
+    <button class="btn" id="managersBtn">Managers</button>
+    <button class="btn" id="upgradesBtn">Upgrades</button>
+    <button class="btn danger" id="prestigeBtn">Nine Lives</button>
+  </nav>
+  <main class="businesses" id="businesses"></main>
+</div>
+<div class="modalBack" id="modal"><section class="modal"><div class="modalHead"><h2 id="modalTitle">Modal</h2><button class="btn ghost" id="closeModal">Close</button></div><div class="list" id="modalBody"></div></section></div>
+<div class="toast" id="toast"></div>
+<script>
+const DATA=[
+{id:0,n:'Catnip Cart',i:'🌿',c:4,r:1,t:1,g:1.07,m:1000,mn:'Mittens Minty Monroe'},
+{id:1,n:'Scratch Post Press',i:'📰',c:60,r:60,t:3,g:1.15,m:15000,mn:'Tabby Typewriter Tate'},
+{id:2,n:'Purrizza Parlor',i:'🍕',c:720,r:540,t:6,g:1.14,m:100000,mn:'Pepper Paws Romano'},
+{id:3,n:'Cream Puff Cafe',i:'🧁',c:8640,r:4320,t:12,g:1.13,m:500000,mn:'Duchess Whiskers Bell'},
+{id:4,n:'Tuna Trawler',i:'🐟',c:103680,r:51840,t:24,g:1.12,m:1200000,mn:'Captain Clawford'},
+{id:5,n:'Zoomies Arena',i:'🎾',c:1244160,r:622080,t:96,g:1.11,m:50000000,mn:'Coach Pounce McGee'},
+{id:6,n:'Catflix Studio',i:'🎬',c:14929920,r:7464960,t:384,g:1.10,m:800000000,mn:'Lola Lights Lint'},
+{id:7,n:'Whisker Bank',i:'💎',c:179159040,r:89579520,t:1536,g:1.09,m:40000000000,mn:'Sir Purrcival Cashmere'},
+{id:8,n:'Luxury Litter Co.',i:'📦',c:2149908480,r:1074954240,t:6144,g:1.08,m:750000000000,mn:'Goldie P. Fluff'},
+{id:9,n:'Moonbeam Mission',i:'🌙',c:25798901760,r:29668737024,t:36864,g:1.07,m:15000000000000,mn:'Dr. Nova Nibbles'}
+];
+const UP=[
+{id:'u0',name:'Premium Catnip Blend',desc:'Catnip Cart profit ×3',target:0,type:'profit',mult:3,cost:250000},
+{id:'u1',name:'Gold-Plated Claws',desc:'Scratch Post Press speed ×2',target:1,type:'speed',mult:2,cost:800000},
+{id:'u2',name:'Mozzarella Moon Dust',desc:'Purrizza Parlor profit ×3',target:2,type:'profit',mult:3,cost:6000000},
+{id:'u3',name:'Automatic Biscuit Kneader',desc:'Cream Puff Cafe speed ×2',target:3,type:'speed',mult:2,cost:700000000},
+{id:'u4',name:'Super Tuna Sonar',desc:'Tuna Trawler profit ×3',target:4,type:'profit',mult:3,cost:1200000000},
+{id:'u5',name:'Laser Pointer League',desc:'Zoomies Arena speed ×2',target:5,type:'speed',mult:2,cost:90000000000},
+{id:'u6',name:'Viral Cat Clips',desc:'Catflix Studio profit ×3',target:6,type:'profit',mult:3,cost:200000000000},
+{id:'u7',name:'Velvet Vaults',desc:'Whisker Bank profit ×3',target:7,type:'profit',mult:3,cost:4000000000000},
+{id:'u8',name:'Self-Cleaning Dynasty',desc:'Luxury Litter Co. speed ×2',target:8,type:'speed',mult:2,cost:600000000000000},
+{id:'u9',name:'Moon Cat Charter',desc:'Moonbeam Mission profit ×3',target:9,type:'profit',mult:3,cost:2000000000000000},
+{id:'g1',name:'Diamond Collar Fund',desc:'All businesses profit ×1.5',target:-1,type:'global',mult:1.5,cost:50000000},
+{id:'g2',name:'Council of Fancy Cats',desc:'All businesses profit ×2',target:-1,type:'global',mult:2,cost:5000000000}
+];
+const SAVE='whisker-wealth-save-v1';
+let state=load();let buyMult=1;let last=performance.now();let saveClock=0;
+function fresh(){return{cash:4,total:0,clicks:0,patrons:0,up:{},last:Date.now(),b:DATA.map((_,i)=>({q:i?0:1,p:0,run:false,man:false}))}}
+function load(){try{let s=JSON.parse(localStorage.getItem(SAVE)||'null');let f=fresh();if(!s)return f;Object.assign(f,s);if(!Array.isArray(f.b)||f.b.length!==DATA.length)f.b=fresh().b;return f}catch(e){return fresh()}}
+function save(){state.last=Date.now();localStorage.setItem(SAVE,JSON.stringify(state))}
+function fmt(n){if(!isFinite(n))return'$∞';const u=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];let k=0;while(n>=1000&&k<u.length-1){n/=1000;k++}return'$'+(k?n.toFixed(n<10?2:n<100?1:0):Math.floor(n).toLocaleString())+u[k]}
+function cost(id,q=1){let b=DATA[id],own=state.b[id].q,total=0;for(let x=0;x<q;x++)total+=b.c*Math.pow(b.g,own+x);return total}
+function maxBuy(id){let n=0;while(cost(id,n+1)<=state.cash&&n<500)n++;return Math.max(1,n)}
+function pMult(id){let q=state.b[id].q,m=1;[25,50,100,200,300,400].forEach(t=>{if(q>=t)m*=2});UP.forEach(u=>{if(state.up[u.id]&&((u.target===id&&u.type==='profit')||u.target===-1))m*=u.mult});m*=1+state.patrons*.02;return m}
+function sMult(id){let q=state.b[id].q,m=1;[50,200].forEach(t=>{if(q>=t)m*=2});UP.forEach(u=>{if(state.up[u.id]&&u.target===id&&u.type==='speed')m*=u.mult});return m}
+function rev(id){return DATA[id].r*state.b[id].q*pMult(id)}
+function dur(id){return Math.max(.08,DATA[id].t/sMult(id))}
+function ips(){return DATA.reduce((a,_,i)=>a+(state.b[i].man&&state.b[i].q?rev(i)/dur(i):0),0)}
+function earn(v){state.cash+=v;state.total+=v}
+function run(id){let o=state.b[id];if(!o.q||o.run)return;o.run=true;o.p=0}
+function buy(id){let q=buyMult==='max'?maxBuy(id):buyMult,c=cost(id,q);if(c>state.cash)return pop('Need more purrfits.');state.cash-=c;state.b[id].q+=q;pop('Bought '+q+' '+DATA[id].n);render()}
+function openManagers(){modalTitle.textContent='Managers';modalBody.innerHTML='';DATA.forEach((b,i)=>{let o=state.b[i],card=document.createElement('div');card.className='card'+(o.man?' done':'')+(state.cash<b.m&&!o.man?' locked':'');card.innerHTML='<div><b>👔 '+b.mn+'</b><br><small>Automatically runs '+b.n+'</small></div>';let btn=document.createElement('button');btn.className='btn';btn.textContent=o.man?'Hired':fmt(b.m);btn.disabled=o.man||state.cash<b.m;if(!o.man)btn.onclick=()=>{state.cash-=b.m;o.man=true;run(i);pop('Manager hired.');openManagers();render()};card.appendChild(btn);modalBody.appendChild(card)});modal.classList.add('show')}
+function openUpgrades(){modalTitle.textContent='Upgrades';modalBody.innerHTML='';UP.forEach(u=>{let done=state.up[u.id],card=document.createElement('div');card.className='card'+(done?' done':'')+(state.cash<u.cost&&!done?' locked':'');card.innerHTML='<div><b>⚡ '+u.name+'</b><br><small>'+u.desc+'</small></div>';let btn=document.createElement('button');btn.className='btn';btn.textContent=done?'Owned':fmt(u.cost);btn.disabled=done||state.cash<u.cost;if(!done)btn.onclick=()=>{state.cash-=u.cost;state.up[u.id]=1;pop('Upgrade bought.');openUpgrades();render()};card.appendChild(btn);modalBody.appendChild(card)});modal.classList.add('show')}
+function openPrestige(){let gain=Math.floor(Math.sqrt(state.total/1000000));modalTitle.textContent='Nine Lives';modalBody.innerHTML='<div class="card"><div><b>🐾 Start another life?</b><br><small>Restart businesses and cash, but gain Patrons. Each Patron adds +2% profit forever.</small><br><br><b>Potential Patrons: '+gain+'</b></div><button class="btn danger" '+(gain<1?'disabled':'')+' id="prestigeGo">Begin</button></div>';modal.classList.add('show');let g=document.getElementById('prestigeGo');if(g)g.onclick=()=>{let keep=state.patrons+gain;state=fresh();state.patrons=keep;save();modal.classList.remove('show');pop('A new life begins.');render()}}
+function pop(t){toast.textContent='🐱 '+t;toast.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>toast.classList.remove('show'),1500)}
+function render(){businesses.innerHTML='';let total=0;DATA.forEach((b,i)=>{let o=state.b[i];total+=o.q;let locked=!o.q&&state.cash<cost(i);let el=document.createElement('section');el.className='biz'+(locked?' locked':'');let pct=o.run?Math.min(100,o.p/dur(i)*100):0;el.innerHTML='<div class="icon '+(o.man?'managed':'')+'">'+b.i+'</div><div class="info"><h3>'+b.n+' <span class="owned">Owned '+o.q+'</span></h3><div class="bar"><div class="fill" style="width:'+pct+'%"></div><div class="barText">'+(o.run?'Making purrfits… '+Math.floor(pct)+'%':'Click paw to earn '+fmt(rev(i)))+'</div></div></div>';let ic=el.querySelector('.icon');ic.onclick=()=>{state.clicks++;run(i)};let q=buyMult==='max'?maxBuy(i):buyMult;let btn=document.createElement('button');btn.className='btn buy';btn.innerHTML='<small>Buy '+q+'</small><b>'+fmt(cost(i,q))+'</b>';btn.disabled=cost(i,q)>state.cash;btn.onclick=()=>buy(i);el.appendChild(btn);businesses.appendChild(el)});cash.textContent=fmt(state.cash);earned.textContent=fmt(state.total);bizTotal.textContent=total;investors.textContent=state.patrons;clicks.textContent=state.clicks;rate.textContent='+'+fmt(ips())+'/sec'}
+function tick(now){let dt=(now-last)/1000;last=now;state.b.forEach((o,i)=>{if(o.man&&o.q&&!o.run)run(i);if(o.run){o.p+=dt;if(o.p>=dur(i)){earn(rev(i));o.p=0;o.run=!!o.man}}});saveClock+=dt;if(saveClock>3){saveClock=0;save()}render();requestAnimationFrame(tick)}
+document.querySelectorAll('[data-mult]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-mult]').forEach(x=>x.classList.remove('active'));btn.classList.add('active');buyMult=btn.dataset.mult==='max'?'max':+btn.dataset.mult;render()});managersBtn.onclick=openManagers;upgradesBtn.onclick=openUpgrades;prestigeBtn.onclick=openPrestige;closeModal.onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
+function makeFloaters(){let symbols=['🐾','✨','🐱','🎀','🧶'];for(let i=0;i<24;i++){let f=document.createElement('div');f.className='floater';f.textContent=symbols[Math.floor(Math.random()*symbols.length)];f.style.left=Math.random()*100+'vw';f.style.fontSize=(12+Math.random()*24)+'px';f.style.animationDuration=(10+Math.random()*18)+'s';f.style.animationDelay=(-Math.random()*22)+'s';f.style.setProperty('--drift',(Math.random()*120-60)+'px');floaters.appendChild(f)}}makeFloaters();
+let away=Math.min(12*3600,Math.max(0,(Date.now()-state.last)/1000));if(away>30){let gain=ips()*away;earn(gain);setTimeout(()=>pop('Offline purrfits: '+fmt(gain)),600)}render();requestAnimationFrame(tick);addEventListener('beforeunload',save);
+</script>
+</body>
+</html>
