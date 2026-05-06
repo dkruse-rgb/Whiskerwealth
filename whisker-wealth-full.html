@@ -1,0 +1,2994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whisker Wealth — Kitty Tycoon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Inline&family=Space+Mono:wght@400;700&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #f4c430;
+    --gold-deep: #c89b1f;
+    --ink: #0f1115;
+    --paper: #f3ead3;
+    --paper-dark: #e6d9b3;
+    --red: #c0392b;
+    --green: #27725a;
+    --teal: #1f6f7a;
+    --shadow: rgba(15, 17, 21, 0.35);
+  }
+
+  html, body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Art-deco starburst background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at top, rgba(244, 196, 48, 0.08), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(244, 196, 48, 0.025) 8deg 9deg
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grain */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='3'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.4'/></svg>");
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 999;
+    mix-blend-mode: overlay;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  /* HEADER */
+  header {
+    border: 3px double var(--gold);
+    background: linear-gradient(180deg, #1a1d24 0%, #0f1115 100%);
+    padding: 18px 24px;
+    margin-bottom: 22px;
+    position: relative;
+    box-shadow: 0 8px 0 var(--gold-deep), 0 12px 30px var(--shadow);
+  }
+
+  header::before, header::after {
+    content: '★';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 20px;
+  }
+  header::before { left: 10px; }
+  header::after { right: 10px; }
+
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  h1 {
+    font-family: 'Bungee Inline', cursive;
+    font-size: clamp(28px, 5vw, 46px);
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 var(--red);
+    line-height: 1;
+  }
+
+  .subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--paper-dark);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* CASH DISPLAY */
+  .cash-panel {
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--gold-deep);
+    padding: 14px 22px;
+    text-align: right;
+    min-width: 240px;
+    position: relative;
+    box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--gold-deep);
+  }
+
+  .cash-label {
+    font-family: 'Bungee', cursive;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold-deep);
+  }
+
+  .cash-amount {
+    font-family: 'Bungee', cursive;
+    font-size: 28px;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+
+  .cash-rate {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  /* STATS BAR */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .stat {
+    background: rgba(244, 196, 48, 0.08);
+    border-left: 3px solid var(--gold);
+    padding: 10px 14px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-family: 'Bungee', cursive;
+    font-size: 18px;
+    color: var(--paper);
+    margin-top: 2px;
+  }
+
+  /* BUSINESS LIST */
+  .businesses {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .biz {
+    display: grid;
+    grid-template-columns: 90px 1fr 200px;
+    gap: 16px;
+    align-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 14px;
+    border: 2px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--gold-deep);
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .biz.locked {
+    background: #2a2d35;
+    color: var(--paper-dark);
+    border-color: #444;
+    box-shadow: 6px 6px 0 #1a1d24;
+    opacity: 0.85;
+  }
+
+  .biz:not(.locked):hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--gold-deep);
+  }
+
+  /* ICON / PRODUCE BUTTON */
+  .biz-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--ink);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    border: 3px solid var(--gold);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(244, 196, 48, 0.3);
+    transition: transform 0.08s ease;
+  }
+  .biz-icon * { pointer-events: none; }
+
+  .biz-icon.managed::after {
+    content: '👔';
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background: var(--green);
+    color: var(--paper);
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--paper);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .biz-icon:active:not(.disabled) {
+    transform: scale(0.94);
+  }
+
+  .biz-icon.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .biz.locked .biz-icon {
+    background: #1a1d24;
+    color: #555;
+    border-color: #555;
+  }
+
+  /* PROGRESS BAR */
+  .biz-info {
+    min-width: 0;
+  }
+
+  .biz-name {
+    font-family: 'Bungee', cursive;
+    font-size: 16px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .biz-count {
+    font-size: 12px;
+    color: var(--gold-deep);
+    background: var(--ink);
+    color: var(--gold);
+    padding: 2px 8px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .progress-track {
+    height: 28px;
+    background: var(--paper-dark);
+    border: 2px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green) 0%, #2f8f6f 100%);
+    width: 0%;
+    transition: width 0.1s linear;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent 0 8px,
+      rgba(255, 255, 255, 0.1) 8px 16px
+    );
+  }
+
+  .progress-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    text-shadow: 0 0 4px var(--paper);
+    z-index: 2;
+  }
+
+  /* BUY BUTTON */
+  .buy-btn {
+    background: var(--ink);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 12px 14px;
+    font-family: 'Bungee', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s ease;
+    position: relative;
+  }
+
+  .buy-btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  .buy-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: #666;
+    color: #888;
+  }
+
+  .buy-label {
+    font-size: 10px;
+    color: var(--gold-deep);
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .buy-btn:hover:not(:disabled) .buy-label {
+    color: var(--ink);
+  }
+
+  .buy-cost {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .buy-qty {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 9px;
+    color: var(--gold);
+    background: var(--ink);
+    padding: 1px 4px;
+    border: 1px solid var(--gold);
+  }
+
+  /* MULTIPLIER CONTROL */
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mult-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .mult-btn {
+    background: transparent;
+    color: var(--paper);
+    border: 1px solid var(--gold);
+    padding: 6px 12px;
+    font-family: 'Bungee', cursive;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+  }
+
+  .mult-btn.active {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  /* MANAGERS BUTTON */
+  .action-btn {
+    background: var(--gold);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 6px 12px;
+    font-family: 'Bungee', cursive;
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: transform 0.1s ease;
+  }
+  .action-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+  .action-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+  .upgrades-btn { background: #f4c430; }
+  .invest-btn { background: #c0392b; color: var(--paper); }
+  .invest-btn:hover { background: #e74c3c; }
+
+  /* keep legacy class for compatibility */
+  .managers-btn { background: var(--gold); }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    overflow-y: auto;
+  }
+  .modal-backdrop.show { display: flex; }
+
+  .modal {
+    background: var(--ink);
+    border: 3px double var(--gold);
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 6px var(--gold-deep);
+    position: relative;
+    margin: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 18px 22px;
+    border-bottom: 2px solid var(--gold);
+    background: linear-gradient(180deg, #1a1d24, #0f1115);
+  }
+
+  .modal-title {
+    font-family: 'Bungee Inline', cursive;
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 var(--red);
+  }
+
+  .modal-sub {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--paper-dark);
+    margin-top: 4px;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Bungee', cursive;
+    transition: all 0.1s ease;
+  }
+  .modal-close:hover { background: var(--gold); color: var(--ink); }
+
+  .manager-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .manager-card {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 12px 14px;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--gold-deep);
+  }
+
+  .manager-card.hired {
+    background: #d4e8d0;
+    border-color: var(--green);
+    box-shadow: 4px 4px 0 var(--green);
+  }
+
+  .manager-card.locked {
+    background: #2a2d35;
+    color: var(--paper-dark);
+    border-color: #444;
+    box-shadow: 4px 4px 0 #1a1d24;
+    opacity: 0.7;
+  }
+
+  .manager-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 2px solid var(--gold);
+  }
+
+  .manager-info { min-width: 0; }
+
+  .manager-name {
+    font-family: 'Bungee', cursive;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .manager-job {
+    font-size: 11px;
+    color: var(--gold-deep);
+    font-style: italic;
+  }
+  .manager-card.hired .manager-job { color: var(--green); }
+  .manager-card.locked .manager-job { color: var(--paper-dark); }
+
+  .manager-hire {
+    background: var(--ink);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 8px 14px;
+    font-family: 'Bungee', cursive;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .manager-hire:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
+  .manager-hire:disabled { opacity: 0.4; cursor: not-allowed; border-color: #888; color: #888; }
+  .manager-hire.hired-tag {
+    background: var(--green);
+    color: var(--paper);
+    border-color: var(--green);
+    cursor: default;
+  }
+
+  /* UPGRADES */
+  .upgrade-list {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+
+  .upgrade-card {
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 12px;
+    box-shadow: 4px 4px 0 var(--gold-deep);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .upgrade-card.purchased {
+    background: #d4e8d0;
+    border-color: var(--green);
+    box-shadow: 4px 4px 0 var(--green);
+    opacity: 0.9;
+  }
+  .upgrade-card.locked {
+    background: #2a2d35;
+    color: var(--paper-dark);
+    border-color: #444;
+    box-shadow: 4px 4px 0 #1a1d24;
+    opacity: 0.7;
+  }
+  .upgrade-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .upgrade-icon {
+    font-size: 20px;
+  }
+  .upgrade-name {
+    font-family: 'Bungee', cursive;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .upgrade-desc {
+    font-size: 11px;
+    font-style: italic;
+    color: var(--gold-deep);
+  }
+  .upgrade-card.purchased .upgrade-desc { color: var(--green); }
+  .upgrade-card.locked .upgrade-desc { color: var(--paper-dark); }
+  .upgrade-buy {
+    background: var(--ink);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 6px 10px;
+    font-family: 'Bungee', cursive;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .upgrade-buy:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
+  .upgrade-buy:disabled { opacity: 0.4; cursor: not-allowed; border-color: #888; color: #888; }
+  .upgrade-buy.owned { background: var(--green); color: var(--paper); border-color: var(--green); cursor: default; }
+
+  /* INVEST */
+  .invest-body {
+    padding: 22px;
+    color: var(--paper);
+    text-align: center;
+  }
+  .invest-warning {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--paper-dark);
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .invest-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .invest-stat {
+    background: rgba(244, 196, 48, 0.08);
+    border: 1px solid var(--gold);
+    padding: 12px;
+  }
+  .invest-stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .invest-stat-val {
+    font-family: 'Bungee', cursive;
+    font-size: 18px;
+    color: var(--paper);
+  }
+  .invest-stat-val.green { color: #5fdca0; }
+  .invest-confirm {
+    background: var(--red);
+    color: var(--paper);
+    border: 2px solid var(--paper);
+    padding: 14px 24px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    margin-top: 12px;
+    width: 100%;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.1s ease;
+  }
+  .invest-confirm:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  .invest-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* OFFLINE */
+  .modal-small { max-width: 440px; }
+  .offline-body {
+    padding: 22px;
+    text-align: center;
+    color: var(--paper);
+  }
+  .offline-payout {
+    font-family: 'Bungee', cursive;
+    font-size: 32px;
+    color: #5fdca0;
+    margin: 12px 0;
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  .offline-time {
+    font-style: italic;
+    color: var(--paper-dark);
+    font-size: 13px;
+    margin-bottom: 18px;
+  }
+  .offline-note {
+    font-size: 11px;
+    color: var(--gold);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .offline-collect {
+    background: var(--gold);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 12px 32px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  /* THEME DECORATIONS */
+  .decoration-layer {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+  }
+  .deco-particle {
+    position: absolute;
+    will-change: transform;
+    user-select: none;
+  }
+
+  /* Spooky theme overrides */
+  body.theme-spooky::before {
+    background:
+      radial-gradient(ellipse at top, rgba(255, 117, 24, 0.12), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(255, 117, 24, 0.04) 8deg 9deg
+      );
+  }
+  body.theme-spooky .deco-particle {
+    font-size: 20px;
+    animation: floatBat 8s linear infinite;
+    opacity: 0.6;
+  }
+  @keyframes floatBat {
+    0% { transform: translate(-10vw, var(--y, 50vh)) rotate(0deg); }
+    50% { transform: translate(50vw, calc(var(--y, 50vh) - 60px)) rotate(15deg); }
+    100% { transform: translate(110vw, var(--y, 50vh)) rotate(-10deg); }
+  }
+
+  /* Festive theme overrides */
+  body.theme-festive::before {
+    background:
+      radial-gradient(ellipse at top, rgba(212, 175, 55, 0.1), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(212, 175, 55, 0.025) 8deg 9deg
+      );
+  }
+  body.theme-festive .deco-particle {
+    font-size: 14px;
+    animation: snowFall linear infinite;
+    opacity: 0.85;
+  }
+  @keyframes snowFall {
+    0% { transform: translateY(-5vh) translateX(0) rotate(0deg); }
+    100% { transform: translateY(105vh) translateX(var(--drift, 30px)) rotate(360deg); }
+  }
+
+  /* Spring theme — falling cherry blossom petals */
+  body.theme-spring::before {
+    background:
+      radial-gradient(ellipse at top, rgba(244, 168, 193, 0.18), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(244, 168, 193, 0.04) 8deg 9deg
+      );
+  }
+  body.theme-spring .deco-particle {
+    font-size: 16px;
+    animation: petalFall linear infinite;
+    opacity: 0.9;
+  }
+  @keyframes petalFall {
+    0%   { transform: translateY(-5vh) translateX(0) rotate(0deg); }
+    50%  { transform: translateY(50vh) translateX(calc(var(--drift, 40px) * 0.6)) rotate(180deg); }
+    100% { transform: translateY(105vh) translateX(var(--drift, 40px)) rotate(360deg); }
+  }
+
+  /* Summer theme — bubbles rising up and rays */
+  body.theme-summer::before {
+    background:
+      radial-gradient(ellipse at top, rgba(255, 209, 102, 0.18), transparent 55%),
+      radial-gradient(ellipse at bottom, rgba(4, 150, 199, 0.15), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(255, 209, 102, 0.06) 8deg 9deg
+      );
+  }
+  body.theme-summer .deco-particle {
+    font-size: 18px;
+    animation: bubbleRise linear infinite;
+    opacity: 0.7;
+  }
+  @keyframes bubbleRise {
+    0%   { transform: translateY(105vh) translateX(0) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.7; }
+    50%  { transform: translateY(50vh) translateX(calc(var(--drift, 30px) * 0.5)) scale(1); }
+    90%  { opacity: 0.7; }
+    100% { transform: translateY(-10vh) translateX(var(--drift, 30px)) scale(1.1); opacity: 0; }
+  }
+
+  /* Classic — no decorations needed */
+
+  /* MILESTONE BADGE */
+  .biz-mult {
+    font-size: 10px;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+    font-size: 10px;
+    color: var(--green);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* SETTINGS */
+  .settings-body { padding: 18px; }
+  .setting-row {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(244, 196, 48, 0.2);
+  }
+  .setting-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .setting-label {
+    font-family: 'Bungee', cursive;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .setting-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .setting-opt {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--paper);
+    padding: 6px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .setting-opt:hover { background: rgba(244, 196, 48, 0.1); }
+  .setting-opt.active {
+    background: var(--gold);
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .setting-hint {
+    font-size: 10px;
+    color: var(--paper-dark);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* COMPACT MODE */
+  body.compact .biz {
+    grid-template-columns: 56px 1fr 140px;
+    padding: 8px;
+    gap: 10px;
+  }
+  body.compact .biz-icon { width: 50px; height: 50px; font-size: 26px; border-width: 2px; }
+  body.compact .biz-icon.managed::after { width: 18px; height: 18px; font-size: 9px; bottom: -6px; right: -6px; }
+  body.compact .biz-name { font-size: 13px; margin-bottom: 4px; }
+  body.compact .biz-count { font-size: 11px; padding: 1px 6px; }
+  body.compact .progress-track { height: 22px; }
+  body.compact .progress-text { font-size: 11px; }
+  body.compact .buy-btn { padding: 8px 10px; font-size: 11px; }
+  body.compact .buy-cost { font-size: 13px; }
+  body.compact .businesses { gap: 8px; }
+  @media (max-width: 640px) {
+    body.compact .biz { grid-template-columns: 48px 1fr; }
+    body.compact .buy-btn { grid-column: 1 / -1; }
+  }
+
+  /* INVEST TABS */
+  .invest-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--gold);
+    background: linear-gradient(180deg, #1a1d24, #0f1115);
+  }
+  .invest-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--paper-dark);
+    padding: 14px;
+    font-family: 'Bungee', cursive;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .invest-tab:hover { color: var(--paper); }
+  .invest-tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: rgba(244, 196, 48, 0.05);
+  }
+
+  /* META UPGRADES */
+  .meta-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .meta-card {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 12px;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--gold-deep);
+  }
+  .meta-card.maxed {
+    background: #d4e8d0;
+    border-color: var(--green);
+    box-shadow: 4px 4px 0 var(--green);
+  }
+  .meta-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--ink);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 2px solid var(--gold);
+  }
+  .meta-name {
+    font-family: 'Bungee', cursive;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  .meta-desc {
+    font-size: 11px;
+    color: var(--gold-deep);
+    font-style: italic;
+  }
+  .meta-card.maxed .meta-desc { color: var(--green); }
+  .meta-level {
+    font-size: 10px;
+    color: var(--ink);
+    background: var(--gold);
+    padding: 1px 6px;
+    margin-top: 4px;
+    display: inline-block;
+    font-family: 'Bungee', cursive;
+    letter-spacing: 0.5px;
+  }
+  .meta-buy {
+    background: var(--ink);
+    color: var(--gold);
+    border: 2px solid var(--gold);
+    padding: 8px 12px;
+    font-family: 'Bungee', cursive;
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .meta-buy:hover:not(:disabled) { background: var(--gold); color: var(--ink); }
+  .meta-buy:disabled { opacity: 0.4; cursor: not-allowed; border-color: #888; color: #888; }
+  .meta-buy.maxed { background: var(--green); color: var(--paper); border-color: var(--green); cursor: default; }
+  .investor-balance {
+    text-align: center;
+    padding: 14px;
+    background: rgba(244, 196, 48, 0.08);
+    border-bottom: 2px solid var(--gold);
+  }
+  .investor-balance-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .investor-balance-val {
+    font-family: 'Bungee', cursive;
+    font-size: 24px;
+    color: var(--paper);
+  }
+
+  /* FLOATING CASH ANIMATIONS */
+  .float-cash {
+    position: absolute;
+    font-family: 'Bungee', cursive;
+    font-size: 18px;
+    color: var(--green);
+    pointer-events: none;
+    animation: floatUp 1.2s ease-out forwards;
+    z-index: 10;
+    text-shadow: 1px 1px 0 var(--paper);
+  }
+
+  @keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(0.8); }
+    20% { transform: translateY(-10px) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1); }
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--gold);
+    color: var(--ink);
+    padding: 12px 24px;
+    font-family: 'Bungee', cursive;
+    font-size: 14px;
+    letter-spacing: 1px;
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .biz {
+      grid-template-columns: 60px 1fr;
+      grid-template-rows: auto auto;
+    }
+    .biz-icon { width: 60px; height: 60px; font-size: 28px; }
+    .buy-btn { grid-column: 1 / -1; }
+    h1 { font-size: 28px; }
+  }
+
+  /* divider flourish */
+  .divider {
+    text-align: center;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 8px;
+    margin: 18px 0 12px;
+    opacity: 0.7;
+  }
+
+
+  /* Kitty theme overrides */
+  body.theme-kitty::before {
+    background:
+      radial-gradient(ellipse at top, rgba(255, 159, 199, 0.18), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(201, 167, 255, 0.14), transparent 60%),
+      repeating-conic-gradient(
+        from 0deg at 50% 0%,
+        transparent 0deg 8deg,
+        rgba(255, 159, 199, 0.05) 8deg 9deg
+      );
+  }
+  body.theme-kitty .deco-particle {
+    font-size: 18px;
+    animation: kittyFloat linear infinite;
+    opacity: 0.78;
+  }
+  @keyframes kittyFloat {
+    0%   { transform: translateY(105vh) translateX(0) rotate(0deg) scale(0.9); opacity: 0; }
+    10%  { opacity: 0.7; }
+    50%  { transform: translateY(50vh) translateX(calc(var(--drift, 40px) * 0.6)) rotate(180deg) scale(1); }
+    90%  { opacity: 0.75; }
+    100% { transform: translateY(-10vh) translateX(var(--drift, 40px)) rotate(360deg) scale(1.05); opacity: 0; }
+  }
+  body.theme-kitty header {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, #2c1b35 0%, #1c1324 100%);
+    box-shadow: 0 8px 0 rgba(255, 159, 199, 0.45), 0 12px 30px var(--shadow);
+  }
+  body.theme-kitty h1 {
+    color: var(--gold);
+    text-shadow: 3px 3px 0 var(--red);
+  }
+  body.theme-kitty .cash-panel,
+  body.theme-kitty .stat,
+  body.theme-kitty .biz,
+  body.theme-kitty .manager-card,
+  body.theme-kitty .upgrade-card,
+  body.theme-kitty .invest-stat {
+    border-radius: 18px;
+  }
+  body.theme-kitty .biz,
+  body.theme-kitty .manager-card,
+  body.theme-kitty .upgrade-card {
+    box-shadow: 6px 6px 0 rgba(255, 159, 199, 0.55);
+  }
+  body.theme-kitty .biz-icon,
+  body.theme-kitty .manager-icon {
+    border-radius: 22px;
+    background: linear-gradient(180deg, #27162f, #1c1324);
+  }
+  body.theme-kitty .progress-track {
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  body.theme-kitty .progress-fill {
+    background: linear-gradient(90deg, var(--pink, #ff86b7) 0%, var(--gold) 100%);
+  }
+  body.theme-kitty .buy-btn,
+  body.theme-kitty .action-btn,
+  body.theme-kitty .mult-btn,
+  body.theme-kitty .setting-opt,
+  body.theme-kitty .modal-close,
+  body.theme-kitty .manager-hire,
+  body.theme-kitty .upgrade-buy,
+  body.theme-kitty .invest-confirm,
+  body.theme-kitty .offline-collect {
+    border-radius: 999px;
+  }
+  body.theme-kitty .buy-btn,
+  body.theme-kitty .action-btn,
+  body.theme-kitty .manager-hire,
+  body.theme-kitty .upgrade-buy,
+  body.theme-kitty .offline-collect {
+    background: linear-gradient(180deg, var(--gold) 0%, #ffc1dc 100%);
+    color: var(--ink);
+    border-color: #ffffff55;
+    box-shadow: 2px 2px 0 rgba(255,255,255,0.14);
+  }
+  body.theme-kitty .buy-btn:hover:not(:disabled),
+  body.theme-kitty .action-btn:hover,
+  body.theme-kitty .manager-hire:hover:not(:disabled),
+  body.theme-kitty .upgrade-buy:hover:not(:disabled),
+  body.theme-kitty .offline-collect:hover {
+    filter: brightness(1.03);
+  }
+  body.theme-kitty .mult-btn.active,
+  body.theme-kitty .setting-opt.active {
+    background: linear-gradient(180deg, var(--pink) 0%, var(--gold) 100%);
+    color: var(--ink);
+  }
+  body.theme-kitty .mult-btn::before,
+  body.theme-kitty .action-btn::before,
+  body.theme-kitty .manager-hire::before,
+  body.theme-kitty .upgrade-buy::before,
+  body.theme-kitty .offline-collect::before,
+  body.theme-kitty .invest-confirm::before {
+    content: '🐾 ';
+  }
+  body.theme-kitty .buy-label::before {
+    content: '🐾 ';
+  }
+  body.theme-kitty .manager-card.hired,
+  body.theme-kitty .upgrade-card.purchased {
+    background: #ffe9f2;
+    border-color: var(--pink);
+    box-shadow: 4px 4px 0 var(--pink);
+  }
+  body.theme-kitty .manager-card.locked,
+  body.theme-kitty .upgrade-card.locked,
+  body.theme-kitty .biz.locked {
+    background: #39263f;
+    color: #f4dce7;
+    border-color: #6f5276;
+    box-shadow: 6px 6px 0 #25182b;
+  }
+  body.theme-kitty .biz-count,
+  body.theme-kitty .buy-qty {
+    background: #2a1830;
+    color: var(--gold);
+    border-radius: 999px;
+  }
+  body.theme-kitty .modal {
+    border-color: var(--gold);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 6px rgba(255, 159, 199, 0.45);
+  }
+  body.theme-kitty .modal-header {
+    background: linear-gradient(180deg, #2b1a34, #1c1324);
+  }
+  body.theme-kitty .modal-title {
+    color: var(--gold);
+    text-shadow: 2px 2px 0 var(--red);
+  }
+  body.theme-kitty .cash-rate,
+  body.theme-kitty .invest-stat-val.green {
+    color: #50b783;
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="title-row">
+      <div>
+        <h1>TYCOON EMPIRE</h1>
+        <div class="subtitle">— An Idle Pursuit of Indecent Wealth —</div>
+      </div>
+      <div class="cash-panel">
+        <div class="cash-label">★ CAPITAL ★</div>
+        <div class="cash-amount" id="cash">$0</div>
+        <div class="cash-rate" id="rate">+$0.00 / sec</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label">Total Earned</div>
+      <div class="stat-value" id="totalEarned">$0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Businesses</div>
+      <div class="stat-value" id="totalBiz">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Investors</div>
+      <div class="stat-value" id="investors">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Time Played</div>
+      <div class="stat-value" id="timePlayed">0:00</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Clicks</div>
+      <div class="stat-value" id="clicks">0</div>
+    </div>
+  </div>
+
+  <div class="divider">◆ ◆ ◆</div>
+
+  <div class="controls">
+    <span class="mult-label">BUY:</span>
+    <button class="mult-btn active" data-mult="1">×1</button>
+    <button class="mult-btn" data-mult="10">×10</button>
+    <button class="mult-btn" data-mult="100">×100</button>
+    <button class="mult-btn" data-mult="max">MAX</button>
+    <button class="action-btn managers-btn" id="managersBtn">👔 MANAGERS</button>
+    <button class="action-btn upgrades-btn" id="upgradesBtn">⚡ UPGRADES</button>
+    <button class="action-btn invest-btn" id="investBtn">💼 INVEST</button>
+    <button class="action-btn settings-btn" id="settingsBtn">⚙ SETTINGS</button>
+  </div>
+
+  <div class="businesses" id="businesses"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MANAGERS MODAL -->
+<div class="modal-backdrop" id="managersModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">★ MANAGERS ★</div>
+        <div class="modal-sub">Hire them. They run the show. You sip cocktails.</div>
+      </div>
+      <button class="modal-close" data-close="managersModal">✕</button>
+    </div>
+    <div class="manager-list" id="managerList"></div>
+  </div>
+</div>
+
+<!-- UPGRADES MODAL -->
+<div class="modal-backdrop" id="upgradesModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">⚡ UPGRADES ⚡</div>
+        <div class="modal-sub">Permanent improvements. One-time purchases. Worth every penny.</div>
+      </div>
+      <button class="modal-close" data-close="upgradesModal">✕</button>
+    </div>
+    <div class="upgrade-list" id="upgradeList"></div>
+  </div>
+</div>
+
+<!-- INVESTORS MODAL -->
+<div class="modal-backdrop" id="investModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">💼 INVESTORS 💼</div>
+        <div class="modal-sub">Sell the empire. Spend the spoils.</div>
+      </div>
+      <button class="modal-close" data-close="investModal">✕</button>
+    </div>
+    <div class="investor-balance">
+      <div class="investor-balance-label">★ AVAILABLE INVESTORS ★</div>
+      <div class="investor-balance-val" id="investorBalance">0</div>
+    </div>
+    <div class="invest-tabs">
+      <button class="invest-tab active" data-tab="cashout">💼 CASH OUT</button>
+      <button class="invest-tab" data-tab="shop">🛒 META SHOP</button>
+    </div>
+    <div class="invest-body" id="investBody"></div>
+    <div class="meta-list" id="metaList" style="display:none"></div>
+  </div>
+</div>
+
+<!-- OFFLINE EARNINGS MODAL -->
+<div class="modal-backdrop" id="offlineModal">
+  <div class="modal modal-small">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">★ WELCOME BACK ★</div>
+        <div class="modal-sub">Your managers were busy.</div>
+      </div>
+    </div>
+    <div class="offline-body" id="offlineBody"></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal modal-small">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">⚙ SETTINGS ⚙</div>
+        <div class="modal-sub">Tweak your empire's interface.</div>
+      </div>
+      <button class="modal-close" data-close="settingsModal">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="setting-row">
+        <div class="setting-label">Theme</div>
+        <div class="setting-options" data-setting="theme">
+          <button class="setting-opt" data-val="kitty">🐱 Kitty</button>
+          <button class="setting-opt" data-val="classic">💼 Classic</button>
+          <button class="setting-opt" data-val="spring">🌸 Spring</button>
+          <button class="setting-opt" data-val="summer">🏖️ Summer</button>
+          <button class="setting-opt" data-val="spooky">🎃 Spooky</button>
+          <button class="setting-opt" data-val="festive">🎄 Festive</button>
+        </div>
+        <div class="setting-hint">Themes change visuals, business names, and decorations.<br>Your progress carries over between themes.</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Number Notation</div>
+        <div class="setting-options" data-setting="notation">
+          <button class="setting-opt" data-val="suffix">Suffix (1.23M)</button>
+          <button class="setting-opt" data-val="scientific">Scientific (1.23e6)</button>
+          <button class="setting-opt" data-val="engineering">Engineering (1.23e6)</button>
+        </div>
+        <div class="setting-hint">Suffix uses K/M/B/T/Qa.<br>Scientific shows raw exponents.<br>Engineering rounds to multiples of 3.</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Compact Mode</div>
+        <div class="setting-options" data-setting="compact">
+          <button class="setting-opt" data-val="false">Off</button>
+          <button class="setting-opt" data-val="true">On</button>
+        </div>
+        <div class="setting-hint">Shrinks business cards to fit more on screen.</div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Sound</div>
+        <div class="setting-options" data-setting="sound">
+          <button class="setting-opt" data-val="false">Off</button>
+          <button class="setting-opt" data-val="true">On</button>
+        </div>
+        <div class="setting-row" style="margin:0;padding:0;border:none">
+          <div class="setting-label" style="font-size:10px;margin-top:8px">Volume</div>
+          <input type="range" id="volSlider" min="0" max="100" value="30" style="width:100%;accent-color:var(--gold)">
+        </div>
+        <div class="setting-hint">Sounds are synthesized — no audio files needed.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== THEMES =====
+  const THEMES = {
+    kitty: {
+      id: 'kitty',
+      name: 'Whisker Wealth',
+      tagline: '— Build a Purrfect Fortune —',
+      colors: {
+        '--gold': '#ffd86b',
+        '--gold-deep': '#ff9fc7',
+        '--ink': '#1c1324',
+        '--paper': '#fff4f8',
+        '--paper-dark': '#f4dce7',
+        '--red': '#ff5aa2',
+        '--green': '#6bcf9f',
+        '--teal': '#c9a7ff',
+      },
+      decoration: 'kitty',
+      currency: '$',
+      currencyName: 'Purrfits',
+      businesses: [
+        { name: 'Catnip Cart',          icon: '🌿', managerName: 'Mittens "Minty" Monroe' },
+        { name: 'Scratch Post Press',   icon: '📰', managerName: 'Tabby "Typewriter" Tate' },
+        { name: 'Purrizza Parlor',      icon: '🍕', managerName: 'Pepper "Paws" Romano' },
+        { name: 'Cream Puff Cafe',      icon: '🧁', managerName: 'Duchess "Whiskers" Bell' },
+        { name: 'Tuna Trawler',         icon: '🐟', managerName: 'Captain Clawford' },
+        { name: 'Zoomies Arena',        icon: '🎾', managerName: 'Coach Pounce McGee' },
+        { name: 'Catflix Studio',       icon: '🎬', managerName: 'Lola "Lights" Lint' },
+        { name: 'Whisker Bank',         icon: '💎', managerName: 'Sir Purrcival Cashmere' },
+        { name: 'Luxury Litter Co.',    icon: '📦', managerName: 'Goldie P. Fluff' },
+        { name: 'Moonbeam Mission',     icon: '🌙', managerName: 'Dr. Nova Nibbles' },
+      ],
+      copy: {
+        prestige: 'CHASE NINE LIVES',
+        investorsName: 'Patrons',
+        investorIcon: '🐾',
+        welcomeBack: 'WELCOME BACK, KITTY',
+        empireReborn: 'Your whiskers grew even stronger.',
+      },
+    },
+
+    classic: {
+      id: 'classic',
+      name: 'Tycoon Empire',
+      tagline: '— An Idle Pursuit of Indecent Wealth —',
+      colors: {
+        '--gold': '#f4c430',
+        '--gold-deep': '#c89b1f',
+        '--ink': '#0f1115',
+        '--paper': '#f3ead3',
+        '--paper-dark': '#e6d9b3',
+        '--red': '#c0392b',
+        '--green': '#27725a',
+        '--teal': '#1f6f7a',
+      },
+      decoration: null,
+      currency: '$',
+      currencyName: 'Capital',
+      // Business overrides (name, icon, managerName, managerCost overrides etc)
+      businesses: null,  // null = use defaults
+      // Themed copy
+      copy: {
+        prestige: 'SELL THE EMPIRE',
+        investorsName: 'Investors',
+        investorIcon: '⭐',
+        welcomeBack: 'WELCOME BACK',
+        empireReborn: 'Empire reborn.',
+      },
+    },
+
+    spooky: {
+      id: 'spooky',
+      name: 'Tycoon Crypt',
+      tagline: '— A Ghoulish Pursuit of Otherworldly Wealth —',
+      colors: {
+        '--gold': '#ff7518',         // Pumpkin orange
+        '--gold-deep': '#c75a13',
+        '--ink': '#1a0a1f',          // Deep purple-black
+        '--paper': '#f0e6d2',        // Bone parchment
+        '--paper-dark': '#c9b896',
+        '--red': '#8b0000',          // Blood red
+        '--green': '#7cb518',        // Slime green
+        '--teal': '#5a3a8a',         // Witch purple
+      },
+      decoration: 'spooky',
+      currency: '$',
+      currencyName: 'Cursed Gold',
+      businesses: [
+        { name: 'Pumpkin Spice Stand',     icon: '🎃', managerName: 'Wanda "Witchfingers" Krell' },
+        { name: 'Cursed Newspaper',        icon: '📜', managerName: 'Edgar "Inkblood" Crowe' },
+        { name: 'Haunted Pizzeria',        icon: '🦇', managerName: 'Tony "The Phantom" Vinci' },
+        { name: 'Voodoo Donut Shop',       icon: '🍩', managerName: 'Madame Glaze the Hexed' },
+        { name: 'Kraken Trawler',          icon: '🐙', managerName: 'Captain Bones Forrester' },
+        { name: 'Zombie Hockey League',    icon: '💀', managerName: 'Coach Mortimer "Brains" Volkov' },
+        { name: 'Horror Movie Studio',     icon: '🎬', managerName: 'Lana "Slasher" Sterling' },
+        { name: 'Crypt Vault Bank',        icon: '⚰️', managerName: 'Mr. Pennypacker, Esq. (Deceased)' },
+        { name: 'Demonic Oil Refinery',    icon: '🔥', managerName: 'Hank "Hellfire" Crawford' },
+        { name: 'Necromancy Lab',          icon: '🧪', managerName: 'Dr. Vex the Reanimator' },
+      ],
+      copy: {
+        prestige: 'BANISH THE EMPIRE',
+        investorsName: 'Souls',
+        investorIcon: '👻',
+        welcomeBack: 'YOU HAVE RETURNED',
+        empireReborn: 'The empire rises from the grave.',
+      },
+    },
+
+    festive: {
+      id: 'festive',
+      name: 'Tycoon Holiday',
+      tagline: '— Tis the Season for Outrageous Wealth —',
+      colors: {
+        '--gold': '#d4af37',          // Warm gold
+        '--gold-deep': '#a8862a',
+        '--ink': '#0a2540',           // Deep navy night sky
+        '--paper': '#fbf3e1',         // Cream
+        '--paper-dark': '#e8dcc0',
+        '--red': '#c8102e',           // Christmas red
+        '--green': '#0f5132',         // Pine green
+        '--teal': '#1a7a5a',
+      },
+      decoration: 'festive',
+      currency: '$',
+      currencyName: 'Holiday Cheer',
+      businesses: [
+        { name: 'Hot Cocoa Stand',        icon: '☕', managerName: 'Wendy "Marshmallow" Kim' },
+        { name: 'Christmas Card Route',   icon: '💌', managerName: 'Ricky "Jingle" Diaz' },
+        { name: 'Gingerbread Bakery',     icon: '🎄', managerName: 'Tony "Cinnamon" Vinci' },
+        { name: 'Sugar Cookie Shop',      icon: '🍪', managerName: 'Glenda "Sprinkles" Park' },
+        { name: 'Reindeer Sleigh Co.',    icon: '🦌', managerName: 'Captain Klaus Forrester' },
+        { name: 'Ice Hockey Champions',   icon: '⛸️', managerName: 'Coach Mikhail Volkov' },
+        { name: 'Holiday Movie Studio',   icon: '🎬', managerName: 'Lana "Hallmark" Sterling' },
+        { name: 'Toy Vault Bank',         icon: '🏦', managerName: 'Mr. Pennypacker, Elf' },
+        { name: 'Fruitcake Conglomerate', icon: '🎁', managerName: 'Hank "Tinsel" Crawford' },
+        { name: 'North Pole Space Co.',   icon: '🚀', managerName: 'Dr. Vex Stardust' },
+      ],
+      copy: {
+        prestige: 'WRAP UP THE EMPIRE',
+        investorsName: 'Snowflakes',
+        investorIcon: '❄️',
+        welcomeBack: 'WELCOME BACK',
+        empireReborn: 'A new year, a fresh empire.',
+      },
+    },
+
+    spring: {
+      id: 'spring',
+      name: 'Tycoon Bloom',
+      tagline: '— A Petal-Soft Pursuit of Blossoming Wealth —',
+      colors: {
+        '--gold': '#f4a8c1',          // Cherry blossom pink
+        '--gold-deep': '#d97a9c',
+        '--ink': '#2d3a2e',           // Soft forest green-black
+        '--paper': '#fef5f8',         // Pale pink-cream
+        '--paper-dark': '#e8d5dd',
+        '--red': '#e8597a',           // Bright rose
+        '--green': '#5fa85f',         // Fresh leaf green
+        '--teal': '#7eb5a4',          // Mint
+      },
+      decoration: 'spring',
+      currency: '$',
+      currencyName: 'Pollen',
+      businesses: [
+        { name: 'Lemonade Garden',        icon: '🌼', managerName: 'Wendy "Daisy" Kim' },
+        { name: 'Seed Catalog Route',     icon: '🌱', managerName: 'Ricky "Sprout" Diaz' },
+        { name: 'Flower Cake Café',       icon: '🌸', managerName: 'Tony "Petals" Vinci' },
+        { name: 'Honey Donut Hive',       icon: '🐝', managerName: 'Glenda "Beekeeper" Park' },
+        { name: 'River Trout Hatchery',   icon: '🐟', managerName: 'Captain Lily Forrester' },
+        { name: 'Spring Polo Club',       icon: '🐎', managerName: 'Coach Mikhail "Mallet" Volkov' },
+        { name: 'Garden Party Studio',    icon: '🎬', managerName: 'Lana "Tulip" Sterling' },
+        { name: 'Tea Garden Bank',        icon: '🍵', managerName: 'Mr. Pennypacker, Florist' },
+        { name: 'Bamboo Energy Co.',      icon: '🎋', managerName: 'Hank "Wisteria" Crawford' },
+        { name: 'Cherry Blossom Rocketry',icon: '🚀', managerName: 'Dr. Vex Sakura' },
+      ],
+      copy: {
+        prestige: 'PRUNE THE EMPIRE',
+        investorsName: 'Petals',
+        investorIcon: '🌸',
+        welcomeBack: 'WELCOME BACK',
+        empireReborn: 'New growth begins.',
+      },
+    },
+
+    summer: {
+      id: 'summer',
+      name: 'Tycoon Beach',
+      tagline: '— A Sun-Drenched Pursuit of Sandy Wealth —',
+      colors: {
+        '--gold': '#ffd166',          // Sunshine yellow
+        '--gold-deep': '#e6a800',
+        '--ink': '#0d3b66',           // Deep ocean blue
+        '--paper': '#fef9e7',         // Sandy cream
+        '--paper-dark': '#f0e0a8',
+        '--red': '#ee6c4d',           // Sunset coral
+        '--green': '#06a77d',         // Tropical sea green
+        '--teal': '#0496c7',          // Caribbean blue
+      },
+      decoration: 'summer',
+      currency: '$',
+      currencyName: 'Sand Dollars',
+      businesses: [
+        { name: 'Beach Lemonade Hut',     icon: '🍹', managerName: 'Wendy "Coconut" Kim' },
+        { name: 'Boardwalk Newspaper',    icon: '🗞️', managerName: 'Ricky "Shades" Diaz' },
+        { name: 'Surfside Pizzeria',      icon: '🌮', managerName: 'Tony "Boardshorts" Vinci' },
+        { name: 'Ice Cream Truck Fleet',  icon: '🍦', managerName: 'Glenda "Sprinkle" Park' },
+        { name: 'Tropical Shrimp Co.',    icon: '🦞', managerName: 'Captain Marlin Forrester' },
+        { name: 'Beach Volleyball League',icon: '🏐', managerName: 'Coach Mikhail "Sandy" Volkov' },
+        { name: 'Summer Blockbuster Co.', icon: '🎬', managerName: 'Lana "Sunscreen" Sterling' },
+        { name: 'Resort Vault Bank',      icon: '🏖️', managerName: 'Mr. Pennypacker, in Linen' },
+        { name: 'Yacht Fuel Co.',         icon: '⛵', managerName: 'Hank "Tan Lines" Crawford' },
+        { name: 'Tropical Space Resort',  icon: '🚀', managerName: 'Dr. Vex Margaritaville' },
+      ],
+      copy: {
+        prestige: 'SAIL AWAY',
+        investorsName: 'Seashells',
+        investorIcon: '🐚',
+        welcomeBack: 'WELCOME BACK',
+        empireReborn: 'A new tide rolls in.',
+      },
+    },
+  };
+
+  // Active theme — settings.theme controls this.
+  // Defensive: state may not be initialized yet (Proxy trap can fire during state literal eval).
+  function activeTheme() {
+    try {
+      if (typeof state === 'undefined' || !state || !state.settings) return THEMES.classic;
+      return THEMES[state.settings.theme] || THEMES.classic;
+    } catch (e) {
+      return THEMES.classic;
+    }
+  }
+
+  // Apply themed business overrides on top of base BUSINESS_BASE
+  function getBusinessDef(i) {
+    const base = BUSINESS_BASE[i];
+    const t = activeTheme();
+    if (!t.businesses || !t.businesses[i]) return base;
+    return { ...base, ...t.businesses[i] };
+  }
+
+  function applyThemeStyles() {
+    const t = activeTheme();
+    const root = document.documentElement;
+    Object.entries(t.colors).forEach(([k, v]) => root.style.setProperty(k, v));
+    document.body.classList.remove('theme-kitty', 'theme-classic', 'theme-spooky', 'theme-festive', 'theme-spring', 'theme-summer');
+    document.body.classList.add('theme-' + t.id);
+    // Update title and tagline
+    const titleEl = document.querySelector('h1');
+    if (titleEl) titleEl.textContent = t.name.toUpperCase();
+    const subEl = document.querySelector('.subtitle');
+    if (subEl) subEl.textContent = t.tagline;
+    const cashLabel = document.querySelector('.cash-label');
+    if (cashLabel) cashLabel.textContent = '★ ' + t.currencyName.toUpperCase() + ' ★';
+    // Refresh decorations
+    setupDecorations();
+    // Force biz cards to rebuild with new icons/names
+    if (typeof bizContainer !== 'undefined' && bizContainer.children.length) {
+      buildBusinesses();
+      Array.from(bizContainer.children).forEach(el => { el._cache = {}; });
+    }
+  }
+
+  // Base business stats — names/icons can be overridden by theme
+  const BUSINESS_BASE = [
+    { id: 0, name: 'Lemonade Stand', icon: '🍋', baseCost: 4, baseRevenue: 1, baseTime: 1.0, growth: 1.07, managerCost: 1000, managerName: 'Wendy "The Squeeze" Kim' },
+    { id: 1, name: 'Newspaper Route', icon: '📰', baseCost: 60, baseRevenue: 60, baseTime: 3.0, growth: 1.15, managerCost: 15000, managerName: 'Ricky "Headlines" Diaz' },
+    { id: 2, name: 'Pizza Parlor', icon: '🍕', baseCost: 720, baseRevenue: 540, baseTime: 6.0, growth: 1.14, managerCost: 100000, managerName: 'Tony "Pepperoni" Vinci' },
+    { id: 3, name: 'Donut Shop', icon: '🍩', baseCost: 8640, baseRevenue: 4320, baseTime: 12.0, growth: 1.13, managerCost: 500000, managerName: 'Glenda "Glaze" Park' },
+    { id: 4, name: 'Shrimp Boat', icon: '🦐', baseCost: 103680, baseRevenue: 51840, baseTime: 24.0, growth: 1.12, managerCost: 1200000, managerName: 'Captain Bubba Forrester' },
+    { id: 5, name: 'Hockey Team', icon: '🏒', baseCost: 1244160, baseRevenue: 622080, baseTime: 96.0, growth: 1.11, managerCost: 50000000, managerName: 'Coach Mikhail "Slapshot" Volkov' },
+    { id: 6, name: 'Movie Studio', icon: '🎬', baseCost: 14929920, baseRevenue: 7464960, baseTime: 384.0, growth: 1.10, managerCost: 800000000, managerName: 'Lana "Final Cut" Sterling' },
+    { id: 7, name: 'Bank', icon: '🏦', baseCost: 179159040, baseRevenue: 89579520, baseTime: 1536.0, growth: 1.09, managerCost: 40000000000, managerName: 'Mr. Pennypacker, Esq.' },
+    { id: 8, name: 'Oil Company', icon: '🛢️', baseCost: 2149908480, baseRevenue: 1074954240, baseTime: 6144.0, growth: 1.08, managerCost: 750000000000, managerName: 'Hank "Black Gold" Crawford' },
+    { id: 9, name: 'Space Program', icon: '🚀', baseCost: 25798901760, baseRevenue: 29668737024, baseTime: 36864.0, growth: 1.07, managerCost: 15000000000000, managerName: 'Dr. Vex Orbital' },
+  ];
+
+  // BUSINESSES proxy — code reads BUSINESSES[i] and gets the themed version.
+  // Length and forEach/map/etc all work because Proxy traps cover them.
+  const BUSINESSES = new Proxy(BUSINESS_BASE, {
+    get(target, prop) {
+      if (prop === 'length') return target.length;
+      // numeric index → themed business
+      if (typeof prop === 'string' && /^\d+$/.test(prop)) {
+        return getBusinessDef(parseInt(prop));
+      }
+      // forEach/map → iterate themed
+      if (prop === 'forEach') {
+        return (cb) => target.forEach((_, i) => cb(getBusinessDef(i), i, target));
+      }
+      if (prop === 'map') {
+        return (cb) => target.map((_, i) => cb(getBusinessDef(i), i, target));
+      }
+      return target[prop];
+    },
+  });
+
+  // Milestone tiers: at these counts, the business gets permanent multipliers
+  // Pattern: 25→×2, 50→×2 (×4 total), 100→×2 (×8), 200→×2 (×16), 300→×2 (×32), 400→×2 (×64)
+  const MILESTONES = [25, 50, 100, 200, 300, 400];
+  function milestoneMultiplier(count) {
+    let m = 1;
+    MILESTONES.forEach(t => { if (count >= t) m *= 2; });
+    return m;
+  }
+
+  // Speed milestones at 50 and 200 (halve cycle time at those tiers)
+  const SPEED_MILESTONES = [50, 200];
+  function speedMultiplier(count) {
+    let m = 1;
+    SPEED_MILESTONES.forEach(t => { if (count >= t) m *= 2; });
+    return m;
+  }
+
+  // ===== UPGRADES (one-time purchases) =====
+  // type: 'profit' (multiplies revenue), 'speed' (multiplies cycle speed), 'global' (all businesses profit)
+  // target: business id (-1 for global)
+  const UPGRADES = [
+    // Lemonade
+    { id: 'u1',  name: 'Golden Squeezer',          desc: 'Lemonade profit ×3',                target: 0, type: 'profit', mult: 3,   cost: 250000 },
+    { id: 'u2',  name: 'Sicilian Lemons',          desc: 'Lemonade profit ×3',                target: 0, type: 'profit', mult: 3,   cost: 5000000 },
+    // Newspaper
+    { id: 'u3',  name: 'Union-Busting Cart',       desc: 'Newspaper speed ×2',                target: 1, type: 'speed',  mult: 2,   cost: 800000 },
+    { id: 'u4',  name: 'Sensational Headlines',    desc: 'Newspaper profit ×3',               target: 1, type: 'profit', mult: 3,   cost: 12000000 },
+    // Pizza
+    { id: 'u5',  name: 'Imported Buffalo Cheese',  desc: 'Pizza profit ×3',                   target: 2, type: 'profit', mult: 3,   cost: 6000000 },
+    { id: 'u6',  name: 'Wood-Fired Hyperoven',     desc: 'Pizza speed ×2',                    target: 2, type: 'speed',  mult: 2,   cost: 80000000 },
+    // Donut
+    { id: 'u7',  name: '24-Karat Glaze',           desc: 'Donut profit ×3',                   target: 3, type: 'profit', mult: 3,   cost: 90000000 },
+    { id: 'u8',  name: 'Delivery Drone Fleet',     desc: 'Donut speed ×2',                    target: 3, type: 'speed',  mult: 2,   cost: 700000000 },
+    // Shrimp
+    { id: 'u9',  name: 'Caribbean Trawler Fleet',  desc: 'Shrimp Boat profit ×3',             target: 4, type: 'profit', mult: 3,   cost: 1200000000 },
+    { id: 'u10', name: 'Sonar Cheating Devices',   desc: 'Shrimp Boat speed ×2',              target: 4, type: 'speed',  mult: 2,   cost: 9000000000 },
+    // Hockey
+    { id: 'u11', name: 'Steroid Loophole',         desc: 'Hockey Team profit ×3',             target: 5, type: 'profit', mult: 3,   cost: 14000000000 },
+    { id: 'u12', name: 'Bribed Referees',          desc: 'Hockey Team speed ×2',              target: 5, type: 'speed',  mult: 2,   cost: 90000000000 },
+    // Movie
+    { id: 'u13', name: 'Tax-Haven Production',     desc: 'Movie Studio profit ×3',            target: 6, type: 'profit', mult: 3,   cost: 200000000000 },
+    { id: 'u14', name: 'AI Screenwriter Sweatshop',desc: 'Movie Studio speed ×2',             target: 6, type: 'speed',  mult: 2,   cost: 900000000000 },
+    // Bank
+    { id: 'u15', name: 'Subprime Loan Office',     desc: 'Bank profit ×3',                    target: 7, type: 'profit', mult: 3,   cost: 4000000000000 },
+    { id: 'u16', name: 'Algorithmic Trading Bot',  desc: 'Bank speed ×2',                     target: 7, type: 'speed',  mult: 2,   cost: 25000000000000 },
+    // Oil
+    { id: 'u17', name: 'Lobbyist Battalion',       desc: 'Oil Company profit ×3',             target: 8, type: 'profit', mult: 3,   cost: 80000000000000 },
+    { id: 'u18', name: 'Arctic Drilling Permits',  desc: 'Oil Company speed ×2',              target: 8, type: 'speed',  mult: 2,   cost: 600000000000000 },
+    // Space
+    { id: 'u19', name: 'Asteroid Mining Charter',  desc: 'Space Program profit ×3',           target: 9, type: 'profit', mult: 3,   cost: 2000000000000000 },
+    { id: 'u20', name: 'Faster-Than-Light Engine', desc: 'Space Program speed ×2',            target: 9, type: 'speed',  mult: 2,   cost: 9000000000000000 },
+    // Global
+    { id: 'g1',  name: 'Suspicious Offshore Account', desc: 'All businesses profit ×1.5',     target: -1, type: 'global', mult: 1.5, cost: 50000000 },
+    { id: 'g2',  name: 'Lobbyist on Retainer',        desc: 'All businesses profit ×2',       target: -1, type: 'global', mult: 2,   cost: 5000000000 },
+    { id: 'g3',  name: 'Senator in Pocket',           desc: 'All businesses profit ×2',       target: -1, type: 'global', mult: 2,   cost: 800000000000 },
+    { id: 'g4',  name: 'Shadow Cabinet Influence',    desc: 'All businesses profit ×3',       target: -1, type: 'global', mult: 3,   cost: 50000000000000 },
+  ];
+
+  // ===== META UPGRADES (spent with Investors, persist through prestige) =====
+  // Each has levels with increasing costs. effect() returns the active modifier.
+  const META_UPGRADES = [
+    {
+      id: 'm1', name: 'Starter Capital', icon: '💵',
+      desc: lvl => lvl > 0 ? `Start each run with ${lvl * 5} Lemonade Stands` : 'Start each run with extra Lemonade Stands',
+      maxLevel: 5,
+      cost: lvl => Math.floor(2 * Math.pow(2, lvl)),  // 2, 4, 8, 16, 32
+    },
+    {
+      id: 'm2', name: 'Pre-Hired Talent', icon: '👔',
+      desc: lvl => lvl > 0 ? `First ${lvl} manager${lvl === 1 ? '' : 's'} pre-hired each run` : 'Start with managers already hired',
+      maxLevel: 5,
+      cost: lvl => Math.floor(5 * Math.pow(2.2, lvl)),  // 5, 11, 24, 53, 116
+    },
+    {
+      id: 'm3', name: 'Manager Discount', icon: '💼',
+      desc: lvl => lvl > 0 ? `Managers cost ${lvl * 10}% less` : 'Cheaper manager hires',
+      maxLevel: 5,
+      cost: lvl => Math.floor(8 * Math.pow(2, lvl)),  // 8, 16, 32, 64, 128
+    },
+    {
+      id: 'm4', name: 'Bulk Discount', icon: '🏷️',
+      desc: lvl => lvl > 0 ? `Businesses cost ${lvl * 5}% less` : 'Cheaper business purchases',
+      maxLevel: 5,
+      cost: lvl => Math.floor(15 * Math.pow(2.2, lvl)),  // 15, 33, 72, 158, 348
+    },
+    {
+      id: 'm5', name: 'Compound Interest', icon: '📈',
+      desc: lvl => lvl > 0 ? `Each Investor adds +${0.5 + lvl * 0.5}% profit (instead of +2%)` : 'More profit per Investor',
+      maxLevel: 6,
+      cost: lvl => Math.floor(40 * Math.pow(2, lvl)),  // 40, 80, 160, 320, 640, 1280
+    },
+    {
+      id: 'm6', name: 'Workaholic Crew', icon: '⚡',
+      desc: lvl => lvl > 0 ? `All businesses produce ${lvl * 5}% faster` : 'Faster production speed',
+      maxLevel: 5,
+      cost: lvl => Math.floor(25 * Math.pow(2.2, lvl)),
+    },
+    {
+      id: 'm7', name: 'Offline Mogul', icon: '☁️',
+      desc: lvl => lvl > 0 ? `Offline efficiency ${50 + lvl * 10}% (default 50%)` : 'Earn more while away',
+      maxLevel: 5,
+      cost: lvl => Math.floor(20 * Math.pow(2, lvl)),
+    },
+  ];
+
+  function metaLevel(id) { return state.metaUpgrades[id] || 0; }
+  // Effective per-investor profit bonus (default 2%)
+  function investorBonusPct() { return 0.02 + metaLevel('m5') * 0.005; }
+  // Effective offline efficiency (default 50%)
+  function offlineEfficiency() { return 0.5 + metaLevel('m7') * 0.1; }
+  // Business cost discount multiplier (1.0 = no discount)
+  function businessDiscount() { return 1 - metaLevel('m4') * 0.05; }
+  // Manager cost discount
+  function managerDiscount() { return 1 - metaLevel('m3') * 0.10; }
+  // Speed multiplier from m6
+  function metaSpeedBonus() { return 1 + metaLevel('m6') * 0.05; }
+
+
+  // ===== STATE =====
+  let state = {
+    cash: 0,
+    totalEarned: 0,
+    lifetimeEarned: 0,  // never resets, used for investor payout
+    totalClicks: 0,
+    startTime: Date.now(),
+    lastSaveTime: Date.now(),
+    multiplier: 1,
+    investors: 0,
+    spentInvestors: 0,  // tracks investors spent on meta-upgrades
+    purchasedUpgrades: {},  // { upgradeId: true }
+    metaUpgrades: {},  // { metaId: level } — persists through prestige
+    settings: {
+      notation: 'suffix',     // 'suffix' | 'scientific' | 'engineering'
+      compact: false,
+      sound: false,
+      volume: 30,             // 0-100
+      theme: 'kitty',         // 'kitty' | 'classic' | 'spooky' | 'festive'
+    },
+    businesses: BUSINESSES.map(b => ({
+      count: 0,
+      progress: 0,
+      producing: false,
+      managed: false,
+    })),
+  };
+
+  // First business starts unlocked-feeling: player needs to click to start
+  // But we'll let them buy 1 of any they can afford from the start (they have $0, only Lemonade available)
+
+  // Load saved state
+  let offlineEarnings = 0;
+  let offlineSeconds = 0;
+  try {
+    const saved = JSON.parse(localStorage.getItem('tycoon-empire-save'));
+    if (saved && saved.businesses && saved.businesses.length === BUSINESSES.length) {
+      if (typeof saved.cash === 'number') state.cash = saved.cash;
+      if (typeof saved.totalEarned === 'number') state.totalEarned = saved.totalEarned;
+      if (typeof saved.lifetimeEarned === 'number') state.lifetimeEarned = saved.lifetimeEarned;
+      else if (typeof saved.totalEarned === 'number') state.lifetimeEarned = saved.totalEarned;
+      if (typeof saved.totalClicks === 'number') state.totalClicks = saved.totalClicks;
+      if (typeof saved.investors === 'number') state.investors = saved.investors;
+      if (typeof saved.spentInvestors === 'number') state.spentInvestors = saved.spentInvestors;
+      if (saved.purchasedUpgrades && typeof saved.purchasedUpgrades === 'object') {
+        state.purchasedUpgrades = saved.purchasedUpgrades;
+      }
+      if (saved.metaUpgrades && typeof saved.metaUpgrades === 'object') {
+        state.metaUpgrades = saved.metaUpgrades;
+      }
+      if (saved.settings && typeof saved.settings === 'object') {
+        Object.assign(state.settings, saved.settings);
+      }
+      saved.businesses.forEach((sb, i) => {
+        if (!sb) return;
+        const b = state.businesses[i];
+        if (typeof sb.count === 'number') b.count = sb.count;
+        if (typeof sb.progress === 'number') b.progress = sb.progress;
+        if (typeof sb.producing === 'boolean') b.producing = sb.producing;
+        if (typeof sb.managed === 'boolean') b.managed = sb.managed;
+      });
+      state.startTime = Date.now() - (saved.playTime || 0);
+
+      // ===== OFFLINE EARNINGS =====
+      // Award earnings from managed businesses, capped at 4 hours
+      if (saved.lastSaveTime) {
+        const awaySecs = Math.max(0, Math.floor((Date.now() - saved.lastSaveTime) / 1000));
+        const cappedSecs = Math.min(awaySecs, 4 * 60 * 60);
+        if (cappedSecs > 30) {  // only show offline payout if away >30s
+          let payout = 0;
+          const eff = offlineEfficiency();
+          state.businesses.forEach((biz, i) => {
+            if (biz.count > 0 && biz.managed) {
+              payout += revenueFor(BUSINESSES[i], biz.count) / BUSINESSES[i].baseTime * cappedSecs * eff;
+            }
+          });
+          if (payout > 0) {
+            state.cash += payout;
+            state.totalEarned += payout;
+            state.lifetimeEarned += payout;
+            offlineEarnings = payout;
+            offlineSeconds = cappedSecs;
+          }
+        }
+      }
+    }
+  } catch(e) { /* ignore */ }
+
+  // Give starter cash if brand new
+  if (state.totalEarned === 0 && state.cash === 0) {
+    state.cash = 4; // enough to buy first lemonade stand
+  }
+
+  // ===== SOUND ENGINE =====
+  // Web Audio API synthesis — no files, works offline.
+  let audioCtx = null;
+  let masterGain = null;
+  let lastCoinTime = 0;
+
+  function initAudio() {
+    if (audioCtx) return;
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.3;
+      masterGain.connect(audioCtx.destination);
+    } catch (e) {
+      audioCtx = null;
+    }
+  }
+
+  // Play a tone. freq=Hz, dur=seconds, type=oscillator type, gain=peak volume (0-1)
+  function tone(freq, dur, type = 'sine', gain = 0.5, delay = 0) {
+    if (!audioCtx) return;
+    const t0 = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(gain, t0 + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(masterGain);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  // Play a frequency sweep
+  function sweep(fromFreq, toFreq, dur, type = 'sine', gain = 0.4, delay = 0) {
+    if (!audioCtx) return;
+    const t0 = audioCtx.currentTime + delay;
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(fromFreq, t0);
+    osc.frequency.exponentialRampToValueAtTime(toFreq, t0 + dur);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(gain, t0 + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.connect(g).connect(masterGain);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  // Sound effects
+  const SFX = {
+    coin: () => {
+      // Throttle coin sound — capped at 8/sec to avoid cacophony
+      const now = performance.now();
+      if (now - lastCoinTime < 120) return;
+      lastCoinTime = now;
+      tone(880, 0.06, 'sine', 0.18);
+      tone(1320, 0.08, 'sine', 0.12, 0.02);
+    },
+    purchase: () => {
+      // Cash register ding
+      tone(1568, 0.08, 'square', 0.15);
+      tone(2093, 0.18, 'sine', 0.25, 0.04);
+    },
+    upgrade: () => {
+      // Bright chord — C major
+      tone(523, 0.3, 'triangle', 0.2);
+      tone(659, 0.3, 'triangle', 0.2, 0.02);
+      tone(784, 0.4, 'triangle', 0.25, 0.04);
+    },
+    manager: () => {
+      // Rising flourish
+      sweep(440, 880, 0.25, 'triangle', 0.3);
+      tone(1175, 0.2, 'sine', 0.2, 0.2);
+    },
+    milestone: () => {
+      // Three-tone fanfare
+      tone(659, 0.12, 'triangle', 0.3);
+      tone(784, 0.12, 'triangle', 0.3, 0.1);
+      tone(1047, 0.3, 'triangle', 0.35, 0.2);
+    },
+    prestige: () => {
+      // Big stacked chord — C major triad with octaves
+      [262, 330, 392, 523, 659, 784, 1047].forEach((f, i) => {
+        tone(f, 0.8, 'triangle', 0.18, i * 0.04);
+      });
+      sweep(200, 100, 1.2, 'sine', 0.2, 0.3);
+    },
+    click: () => {
+      tone(1200, 0.03, 'square', 0.08);
+    },
+    error: () => {
+      tone(220, 0.12, 'square', 0.15);
+      tone(180, 0.12, 'square', 0.15, 0.05);
+    },
+  };
+
+  function playSfx(name) {
+    if (!state.settings.sound) return;
+    if (!audioCtx) initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    const fn = SFX[name];
+    if (fn) {
+      try { fn(); } catch (e) { /* ignore audio errors */ }
+    }
+  }
+
+
+  const SUFFIXES = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+
+  function formatNumber(n, withDollar) {
+    if (!isFinite(n)) return withDollar ? '$∞' : '∞';
+    const sign = n < 0 ? '-' : '';
+    n = Math.abs(n);
+    const prefix = (withDollar ? '$' : '') ;
+    const notation = state.settings.notation;
+
+    if (n < 1000) return sign + prefix + n.toFixed(2);
+
+    if (notation === 'scientific') {
+      const exp = Math.floor(Math.log10(n));
+      const mantissa = n / Math.pow(10, exp);
+      return sign + prefix + mantissa.toFixed(2) + 'e' + exp;
+    }
+
+    if (notation === 'engineering') {
+      // Like scientific but exponent is multiple of 3
+      const exp = Math.floor(Math.log10(n) / 3) * 3;
+      const mantissa = n / Math.pow(10, exp);
+      return sign + prefix + mantissa.toFixed(2) + 'e' + exp;
+    }
+
+    // Default: suffix
+    let i = 0;
+    let v = n;
+    while (v >= 1000 && i < SUFFIXES.length - 1) { v /= 1000; i++; }
+    if (i >= SUFFIXES.length - 1 && v >= 1000) {
+      // Past Decillion, fall back to scientific
+      const exp = Math.floor(Math.log10(n));
+      const mantissa = n / Math.pow(10, exp);
+      return sign + prefix + mantissa.toFixed(2) + 'e' + exp;
+    }
+    return sign + prefix + v.toFixed(2) + SUFFIXES[i];
+  }
+
+  function fmt(n) { return formatNumber(n, true); }
+  function fmtPlain(n) { return formatNumber(n, false); }
+
+  // ===== GAME LOGIC =====
+  function costFor(bizDef, ownedCount, qty) {
+    // Geometric series: a * (r^n - 1) / (r - 1)
+    const a = bizDef.baseCost * Math.pow(bizDef.growth, ownedCount);
+    const r = bizDef.growth;
+    const raw = a * (Math.pow(r, qty) - 1) / (r - 1);
+    return raw * businessDiscount();
+  }
+
+  function revenueFor(bizDef, count) {
+    if (count === 0) return 0;
+    let rev = bizDef.baseRevenue * count;
+    rev *= milestoneMultiplier(count);
+    UPGRADES.forEach(u => {
+      if (state.purchasedUpgrades[u.id]) {
+        if (u.target === bizDef.id && u.type === 'profit') rev *= u.mult;
+        if (u.type === 'global') rev *= u.mult;
+      }
+    });
+    rev *= (1 + state.investors * investorBonusPct());
+    return rev;
+  }
+
+  function cycleTime(bizDef, count) {
+    let t = bizDef.baseTime;
+    t /= speedMultiplier(count);
+    UPGRADES.forEach(u => {
+      if (state.purchasedUpgrades[u.id] && u.target === bizDef.id && u.type === 'speed') {
+        t /= u.mult;
+      }
+    });
+    t /= metaSpeedBonus();
+    return t;
+  }
+
+  function maxAffordable(bizDef, ownedCount, cash) {
+    const a = bizDef.baseCost * Math.pow(bizDef.growth, ownedCount);
+    const r = bizDef.growth;
+    const disc = businessDiscount();
+    const adjustedCash = cash / disc; // since costFor multiplies by disc, invert here
+    if (adjustedCash < a) return 0;
+    const n = Math.floor(Math.log(adjustedCash * (r - 1) / a + 1) / Math.log(r));
+    return Math.max(0, n);
+  }
+
+  function getQty(bizIndex) {
+    if (state.multiplier === 'max') {
+      const def = BUSINESSES[bizIndex];
+      return Math.max(1, maxAffordable(def, state.businesses[bizIndex].count, state.cash));
+    }
+    return state.multiplier;
+  }
+
+  function buy(bizIndex) {
+    const def = BUSINESSES[bizIndex];
+    const biz = state.businesses[bizIndex];
+    const qty = getQty(bizIndex);
+    const cost = costFor(def, biz.count, qty);
+    if (state.cash >= cost && qty > 0) {
+      const beforeCount = biz.count;
+      state.cash -= cost;
+      biz.count += qty;
+      // Detect milestone crossing
+      const beforeProf = milestoneMultiplier(beforeCount);
+      const afterProf = milestoneMultiplier(biz.count);
+      const beforeSpd = speedMultiplier(beforeCount);
+      const afterSpd = speedMultiplier(biz.count);
+      if (afterProf > beforeProf || afterSpd > beforeSpd) {
+        playSfx('milestone');
+        showToast(`${def.name} MILESTONE! New bonus unlocked.`);
+      } else {
+        playSfx('purchase');
+      }
+      if (biz.count === qty) showToast(`${def.name} ACQUIRED!`);
+      render();
+    } else {
+      playSfx('error');
+    }
+  }
+
+  function hireManager(bizIndex) {
+    const def = BUSINESSES[bizIndex];
+    const biz = state.businesses[bizIndex];
+    if (biz.managed) return;
+    if (biz.count === 0) {
+      showToast(`Buy a ${def.name} first!`);
+      playSfx('error');
+      return;
+    }
+    const cost = def.managerCost * managerDiscount();
+    if (state.cash < cost) { playSfx('error'); return; }
+    state.cash -= cost;
+    biz.managed = true;
+    showToast(`${def.managerName} HIRED!`);
+    playSfx('manager');
+    renderManagers();
+    render();
+  }
+
+  function produce(bizIndex) {
+    const biz = state.businesses[bizIndex];
+    const def = BUSINESSES[bizIndex];
+    // Init audio on first user interaction (browsers require a gesture)
+    if (state.settings.sound && !audioCtx) initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    // If they don't own one yet, tapping the icon attempts to buy
+    if (biz.count === 0) {
+      buy(bizIndex);
+      return;
+    }
+    if (biz.producing) return;
+    biz.producing = true;
+    biz.progress = 0;
+    state.totalClicks++;
+  }
+
+  function tick(dt) {
+    let earnedThisTick = 0;
+    state.businesses.forEach((biz, i) => {
+      if (biz.count === 0) return;
+      const def = BUSINESSES[i];
+      const ct = cycleTime(def, biz.count);
+      // Auto-start if managed
+      if (biz.managed && !biz.producing) {
+        biz.producing = true;
+      }
+      if (biz.producing) {
+        biz.progress += dt / ct;
+        if (biz.progress >= 1) {
+          const cycles = Math.floor(biz.progress);
+          const rev = revenueFor(def, biz.count) * cycles;
+          state.cash += rev;
+          state.totalEarned += rev;
+          state.lifetimeEarned += rev;
+          earnedThisTick += rev;
+          biz.progress = biz.progress - cycles;
+          biz.producing = biz.managed;
+          if (cycles > 0) {
+            showFloat(i, rev);
+            playSfx('coin');
+          }
+        }
+      }
+    });
+  }
+
+  function totalRate() {
+    let rate = 0;
+    state.businesses.forEach((biz, i) => {
+      if (biz.count > 0) {
+        rate += revenueFor(BUSINESSES[i], biz.count) / cycleTime(BUSINESSES[i], biz.count);
+      }
+    });
+    return rate;
+  }
+
+  function totalBusinesses() {
+    return state.businesses.reduce((s, b) => s + b.count, 0);
+  }
+
+  // ===== RENDER =====
+  const bizContainer = document.getElementById('businesses');
+
+  function buildBusinesses() {
+    bizContainer.innerHTML = '';
+    BUSINESSES.forEach((def, i) => {
+      const el = document.createElement('div');
+      el.className = 'biz';
+      el.dataset.i = i;
+      el.innerHTML = `
+        <div class="biz-icon" data-action="produce">${def.icon}</div>
+        <div class="biz-info">
+          <div class="biz-name">
+            <span>${def.name} <span class="biz-mult" data-mult></span></span>
+            <span class="biz-count" data-count>0</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" data-fill></div>
+            <div class="progress-text" data-progress-text>—</div>
+          </div>
+        </div>
+        <button class="buy-btn" data-action="buy">
+          <span class="buy-qty" data-buy-qty>×1</span>
+          <span class="buy-label" data-buy-label>BUY</span>
+          <span class="buy-cost" data-buy-cost>$0</span>
+        </button>
+      `;
+      bizContainer.appendChild(el);
+    });
+
+    let touchStart = null;
+    bizContainer.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      touchStart = { x: t.clientX, y: t.clientY, time: Date.now() };
+    }, { passive: true });
+
+    bizContainer.addEventListener('touchend', (e) => {
+      if (!touchStart) return;
+      const t = e.changedTouches[0];
+      const dx = Math.abs(t.clientX - touchStart.x);
+      const dy = Math.abs(t.clientY - touchStart.y);
+      const dt = Date.now() - touchStart.time;
+      touchStart = null;
+      // Treat as scroll, not tap, if finger moved much or held too long
+      if (dx > 10 || dy > 10 || dt > 500) return;
+
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      const bizEl = target.closest('.biz');
+      if (!bizEl) return;
+      const i = parseInt(bizEl.dataset.i);
+      e.preventDefault(); // prevent the synthetic click that follows
+      if (target.dataset.action === 'produce') produce(i);
+      if (target.dataset.action === 'buy') buy(i);
+    });
+
+    // Click handler for desktop / non-touch devices
+    bizContainer.addEventListener('click', (e) => {
+      // If this click came from a touch we already handled, skip
+      if (e.detail === 0) return; // synthetic
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      const bizEl = target.closest('.biz');
+      if (!bizEl) return;
+      const i = parseInt(bizEl.dataset.i);
+      if (target.dataset.action === 'produce') produce(i);
+      if (target.dataset.action === 'buy') buy(i);
+    });
+  }
+
+  function render() {
+    document.getElementById('cash').textContent = fmt(state.cash);
+    document.getElementById('rate').textContent = '+' + fmt(totalRate()) + ' / sec';
+    document.getElementById('totalEarned').textContent = fmt(state.totalEarned);
+    document.getElementById('totalBiz').textContent = fmtPlain(totalBusinesses());
+    document.getElementById('investors').textContent = state.investors;
+    document.getElementById('clicks').textContent = state.totalClicks;
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const m = Math.floor(elapsed / 60), s = elapsed % 60;
+    document.getElementById('timePlayed').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+
+    // Refresh modals if open
+    if (managersModal.classList.contains('show')) renderManagers();
+    if (upgradesModal.classList.contains('show')) renderUpgrades();
+    if (investModal.classList.contains('show')) {
+      renderInvest();
+      renderMetaShop();
+      const bal = document.getElementById('investorBalance');
+      if (bal) bal.textContent = String(state.investors);
+    }
+
+    Array.from(bizContainer.children).forEach((el, i) => {
+      const biz = state.businesses[i];
+      const def = BUSINESSES[i];
+      const qty = getQty(i);
+      const cost = costFor(def, biz.count, Math.max(1, qty));
+      const canAfford = state.cash >= cost && qty > 0;
+
+      const oneCost = costFor(def, biz.count, 1);
+      const locked = biz.count === 0 && state.cash < oneCost && i > 0;
+
+      // Cache last rendered state to avoid redundant DOM writes
+      const cache = el._cache || (el._cache = {});
+
+      if (cache.locked !== locked) {
+        el.classList.toggle('locked', locked);
+        cache.locked = locked;
+      }
+
+      if (cache.count !== biz.count) {
+        el.querySelector('[data-count]').textContent = biz.count;
+        // Update milestone multiplier display
+        const mEl = el.querySelector('[data-mult]');
+        const profMult = milestoneMultiplier(biz.count);
+        const spdMult = speedMultiplier(biz.count);
+        let multStr = '';
+        if (profMult > 1 || spdMult > 1) {
+          const parts = [];
+          if (profMult > 1) parts.push(`💰×${profMult}`);
+          if (spdMult > 1) parts.push(`⚡×${spdMult}`);
+          multStr = parts.join(' ');
+        }
+        mEl.textContent = multStr;
+        cache.count = biz.count;
+      }
+
+      const fill = el.querySelector('[data-fill]');
+      const progText = el.querySelector('[data-progress-text]');
+      const icon = el.querySelector('.biz-icon');
+
+      const fillPct = biz.count === 0 ? 0 : biz.progress * 100;
+      // Only update width if it changed meaningfully
+      if (Math.abs((cache.fillPct || 0) - fillPct) > 0.3) {
+        fill.style.width = fillPct + '%';
+        cache.fillPct = fillPct;
+      }
+
+      let progStr;
+      if (biz.count === 0) {
+        progStr = locked ? `LOCKED — NEED ${fmt(oneCost)}` : `TAP UNLOCK ↓`;
+      } else {
+        const rev = revenueFor(def, biz.count);
+        const ct = cycleTime(def, biz.count);
+        const remaining = ct * (1 - biz.progress);
+        progStr = biz.producing
+          ? `${remaining.toFixed(1)}s → ${fmt(rev)}`
+          : `READY → ${fmt(rev)} in ${ct.toFixed(1)}s`;
+      }
+      if (cache.progStr !== progStr) {
+        progText.textContent = progStr;
+        cache.progStr = progStr;
+      }
+
+      const wantDisabled = biz.count > 0 && biz.producing && !biz.managed;
+      const wantManaged = biz.count > 0 && biz.managed;
+      // Icon is also "soft-disabled" when locked (can't even afford 1)
+      const softLocked = biz.count === 0 && locked;
+      const finalDisabled = wantDisabled || softLocked;
+      // Only mutate the DOM if the class actually needs to change
+      const hasDisabled = icon.classList.contains('disabled');
+      const hasManaged = icon.classList.contains('managed');
+      if (hasDisabled !== finalDisabled) {
+        if (finalDisabled) icon.classList.add('disabled');
+        else icon.classList.remove('disabled');
+      }
+      if (hasManaged !== wantManaged) {
+        if (wantManaged) icon.classList.add('managed');
+        else icon.classList.remove('managed');
+      }
+
+      const buyBtn = el.querySelector('[data-action="buy"]');
+      if (cache.canAfford !== canAfford) {
+        buyBtn.disabled = !canAfford;
+        cache.canAfford = canAfford;
+      }
+      const qtyStr = '×' + (qty || 1);
+      if (cache.qtyStr !== qtyStr) {
+        el.querySelector('[data-buy-qty]').textContent = qtyStr;
+        cache.qtyStr = qtyStr;
+      }
+      const labelStr = biz.count === 0 ? 'UNLOCK' : 'BUY';
+      if (cache.labelStr !== labelStr) {
+        el.querySelector('[data-buy-label]').textContent = labelStr;
+        cache.labelStr = labelStr;
+      }
+      const costStr = fmt(cost);
+      if (cache.costStr !== costStr) {
+        el.querySelector('[data-buy-cost]').textContent = costStr;
+        cache.costStr = costStr;
+      }
+    });
+  }
+
+  // ===== FLOATING CASH FX =====
+  function showFloat(bizIndex, amount) {
+    const el = bizContainer.children[bizIndex];
+    if (!el) return;
+    const f = document.createElement('div');
+    f.className = 'float-cash';
+    f.textContent = '+' + fmt(amount);
+    f.style.left = (60 + Math.random() * 40) + 'px';
+    f.style.top = '20px';
+    el.style.position = 'relative';
+    el.appendChild(f);
+    setTimeout(() => f.remove(), 1200);
+  }
+
+  // ===== TOAST =====
+  let toastTimeout;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ===== MULTIPLIER BUTTONS =====
+  document.querySelectorAll('.mult-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mult-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const m = btn.dataset.mult;
+      state.multiplier = m === 'max' ? 'max' : parseInt(m);
+      render();
+    });
+  });
+
+  // ===== MANAGERS MODAL =====
+  const managersModal = document.getElementById('managersModal');
+  const managerList = document.getElementById('managerList');
+  const upgradesModal = document.getElementById('upgradesModal');
+  const upgradeList = document.getElementById('upgradeList');
+  const investModal = document.getElementById('investModal');
+  const investBody = document.getElementById('investBody');
+  const metaList = document.getElementById('metaList');
+  const offlineModal = document.getElementById('offlineModal');
+  const offlineBody = document.getElementById('offlineBody');
+  const settingsModal = document.getElementById('settingsModal');
+
+  document.getElementById('managersBtn').addEventListener('click', () => {
+    renderManagers();
+    managersModal.classList.add('show');
+  });
+  document.getElementById('upgradesBtn').addEventListener('click', () => {
+    renderUpgrades();
+    upgradesModal.classList.add('show');
+  });
+  document.getElementById('investBtn').addEventListener('click', () => {
+    renderInvest();
+    renderMetaShop();
+    investModal.classList.add('show');
+  });
+  document.getElementById('settingsBtn').addEventListener('click', () => {
+    renderSettings();
+    settingsModal.classList.add('show');
+  });
+
+  // Invest tabs
+  document.querySelectorAll('.invest-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.invest-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const which = tab.dataset.tab;
+      investBody.style.display = which === 'cashout' ? 'block' : 'none';
+      metaList.style.display = which === 'shop' ? 'flex' : 'none';
+    });
+  });
+
+  // Unified modal close
+  document.querySelectorAll('[data-close]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(btn.dataset.close).classList.remove('show');
+    });
+  });
+  [managersModal, upgradesModal, investModal, settingsModal].forEach(m => {
+    m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('show'); });
+  });
+
+  let managersBuilt = false;
+  function buildManagerCards() {
+    managerList.innerHTML = '';
+    BUSINESSES.forEach((def, i) => {
+      const card = document.createElement('div');
+      card.className = 'manager-card';
+      card.dataset.i = i;
+      card.innerHTML = `
+        <div class="manager-icon">${def.icon}</div>
+        <div class="manager-info">
+          <div class="manager-name">${def.managerName}</div>
+          <div class="manager-job" data-job></div>
+        </div>
+        <button class="manager-hire" data-i="${i}" data-hire-btn></button>
+      `;
+      card.querySelector('button').addEventListener('click', () => hireManager(i));
+      managerList.appendChild(card);
+    });
+    managersBuilt = true;
+  }
+
+  function renderManagers() {
+    if (!managersBuilt) buildManagerCards();
+    Array.from(managerList.children).forEach((card, i) => {
+      const def = BUSINESSES[i];
+      const biz = state.businesses[i];
+      const hired = biz.managed;
+      const owns = biz.count > 0;
+      const canAfford = state.cash >= def.managerCost;
+      const locked = !owns;
+
+      card.classList.toggle('hired', hired);
+      card.classList.toggle('locked', locked);
+
+      const job = card.querySelector('[data-job]');
+      const newJob = hired ? '✓ Running ' + def.name : 'Runs your ' + def.name + ' automatically';
+      if (job.textContent !== newJob) job.textContent = newJob;
+
+      const btn = card.querySelector('[data-hire-btn]');
+      const effCost = def.managerCost * managerDiscount();
+      const newLabel = hired
+        ? 'HIRED'
+        : locked
+          ? 'NEED 1+ ' + def.name.toUpperCase()
+          : 'HIRE ' + fmt(effCost);
+      if (btn.textContent !== newLabel) btn.textContent = newLabel;
+      btn.classList.toggle('hired-tag', hired);
+      btn.disabled = hired || state.cash < effCost || locked;
+    });
+  }
+
+  // ===== UPGRADES =====
+  function buyUpgrade(id) {
+    const u = UPGRADES.find(x => x.id === id);
+    if (!u) return;
+    if (state.purchasedUpgrades[id]) return;
+    if (state.cash < u.cost) { playSfx('error'); return; }
+    if (u.target !== -1 && state.businesses[u.target].count === 0) { playSfx('error'); return; }
+    state.cash -= u.cost;
+    state.purchasedUpgrades[id] = true;
+    showToast(u.name + ' ACQUIRED!');
+    playSfx('upgrade');
+    renderUpgrades();
+    render();
+  }
+
+  let upgradesBuilt = false;
+  function buildUpgradeCards() {
+    upgradeList.innerHTML = '';
+    UPGRADES.forEach(u => {
+      const card = document.createElement('div');
+      card.className = 'upgrade-card';
+      card.dataset.uid = u.id;
+      const icon = u.target === -1 ? '🌐' : BUSINESSES[u.target].icon;
+      const typeIcon = u.type === 'profit' ? '💰' : u.type === 'speed' ? '⚡' : '🌐';
+      card.innerHTML = `
+        <div class="upgrade-head">
+          <div class="upgrade-icon">${icon} ${typeIcon}</div>
+        </div>
+        <div class="upgrade-name">${u.name}</div>
+        <div class="upgrade-desc">${u.desc}</div>
+        <button class="upgrade-buy" data-buy></button>
+      `;
+      card.querySelector('button').addEventListener('click', () => buyUpgrade(u.id));
+      upgradeList.appendChild(card);
+    });
+    upgradesBuilt = true;
+  }
+
+  function renderUpgrades() {
+    if (!upgradesBuilt) buildUpgradeCards();
+    Array.from(upgradeList.children).forEach((card, idx) => {
+      const u = UPGRADES[idx];
+      const purchased = !!state.purchasedUpgrades[u.id];
+      const targetCount = u.target === -1 ? 1 : state.businesses[u.target].count;
+      const locked = targetCount === 0;
+      const canAfford = state.cash >= u.cost;
+
+      const wasPurchased = card.classList.contains('purchased');
+      const wasLocked = card.classList.contains('locked');
+      if (wasPurchased !== purchased) card.classList.toggle('purchased', purchased);
+      if (wasLocked !== locked) card.classList.toggle('locked', locked);
+
+      const btn = card.querySelector('[data-buy]');
+      const labelStr = purchased ? '✓ OWNED' : locked ? 'LOCKED' : fmt(u.cost);
+      if (btn.textContent !== labelStr) btn.textContent = labelStr;
+      if (btn.classList.contains('owned') !== purchased) btn.classList.toggle('owned', purchased);
+      const wantDisabled = purchased || !canAfford || locked;
+      if (btn.disabled !== wantDisabled) btn.disabled = wantDisabled;
+    });
+  }
+
+  // ===== INVESTORS / PRESTIGE =====
+  // Investors = floor(50 * sqrt(lifetimeEarned / 1e10))
+  // ~10B lifetime = 50 investors (+100% profit), 100B = 158, 1T = 500
+  function calcInvestorsForCashOut() {
+    const target = state.lifetimeEarned;
+    const formula = Math.floor(50 * Math.sqrt(target / 1e10));
+    return Math.max(0, formula - state.investors);
+  }
+
+  let investBuilt = false;
+  function renderInvest() {
+    const newInv = calcInvestorsForCashOut();
+    const willHave = state.investors + newInv;
+    const pct = investorBonusPct() * 100;
+    const currentBoost = (state.investors * pct).toFixed(0);
+    const newBoost = (willHave * pct).toFixed(0);
+    const canCash = newInv > 0;
+
+    if (!investBuilt) {
+      investBody.innerHTML = `
+        <div class="invest-warning">
+          Selling the empire wipes your cash, businesses, managers, and upgrades.<br>
+          In exchange, you keep <strong style="color:var(--gold)">all Investors</strong> — each one boosts profit by <strong>+2%</strong> permanently.
+        </div>
+        <div class="invest-stats">
+          <div class="invest-stat">
+            <div class="invest-stat-label">CURRENT</div>
+            <div class="invest-stat-val" data-cur-inv>0</div>
+            <div style="font-size:10px;color:var(--gold-deep);margin-top:2px" data-cur-boost></div>
+          </div>
+          <div class="invest-stat">
+            <div class="invest-stat-label">AFTER CASH-OUT</div>
+            <div class="invest-stat-val green" data-new-inv>0</div>
+            <div style="font-size:10px;color:#5fdca0;margin-top:2px" data-new-boost></div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--paper-dark);margin:8px 0" data-gain-line></div>
+        <button class="invest-confirm" id="investConfirm"></button>
+        <div style="font-size:10px;color:var(--paper-dark);margin-top:14px;font-style:italic" data-lifetime></div>
+      `;
+      document.getElementById('investConfirm').addEventListener('click', () => {
+        const inv = calcInvestorsForCashOut();
+        if (inv <= 0) return;
+        if (confirm(`Sell everything for ${inv} new Investor${inv === 1 ? '' : 's'}? You'll keep all Investors and start fresh.`)) {
+          performPrestige(inv);
+        }
+      });
+      investBuilt = true;
+    }
+
+    const setText = (sel, val) => {
+      const el = investBody.querySelector(sel);
+      if (el && el.textContent !== val) el.textContent = val;
+    };
+    setText('[data-cur-inv]', String(state.investors));
+    setText('[data-cur-boost]', `+${currentBoost}% profit`);
+    setText('[data-new-inv]', String(willHave));
+    setText('[data-new-boost]', `+${newBoost}% profit`);
+    setText('[data-gain-line]', `You'd gain ${newInv} new Investor${newInv === 1 ? '' : 's'} from this cash-out.`);
+    setText('[data-lifetime]', `Lifetime earned: ${fmt(state.lifetimeEarned)}`);
+    const btn = document.getElementById('investConfirm');
+    if (btn) {
+      const label = canCash ? 'SELL THE EMPIRE' : 'NOT ENOUGH EARNED YET';
+      if (btn.textContent !== label) btn.textContent = label;
+      if (btn.disabled !== !canCash) btn.disabled = !canCash;
+    }
+  }
+
+  function performPrestige(gained) {
+    state.investors += gained;
+    state.cash = 4;
+    state.totalEarned = 0;
+    state.totalClicks = 0;
+    state.purchasedUpgrades = {};
+    state.businesses = BUSINESSES.map(() => ({ count: 0, progress: 0, producing: false, managed: false }));
+    state.startTime = Date.now();
+    applyMetaPerks();
+    investModal.classList.remove('show');
+    Array.from(bizContainer.children).forEach(el => { el._cache = {}; });
+    showToast(`+${gained} ${activeTheme().copy.investorsName.toUpperCase()}! ${activeTheme().copy.empireReborn}`);
+    playSfx('prestige');
+    save();
+    render();
+  }
+
+  function applyMetaPerks() {
+    // Starter Capital: extra Lemonade Stands
+    const starterCount = metaLevel('m1') * 5;
+    if (starterCount > 0) {
+      state.businesses[0].count += starterCount;
+    }
+    // Pre-Hired Talent: first N managers free
+    const preHired = metaLevel('m2');
+    for (let i = 0; i < preHired && i < state.businesses.length; i++) {
+      state.businesses[i].managed = true;
+      // Need at least 1 of that biz to make sense; ensure first one if not the lemonade
+      if (state.businesses[i].count === 0) state.businesses[i].count = 1;
+    }
+  }
+
+  // ===== OFFLINE EARNINGS POPUP =====
+  function showOfflineModal(amount, secs) {
+    const hrs = Math.floor(secs / 3600);
+    const mins = Math.floor((secs % 3600) / 60);
+    const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins} minute${mins === 1 ? '' : 's'}`;
+    const capped = secs >= 4 * 60 * 60;
+    offlineBody.innerHTML = `
+      <div class="offline-time">You were away ${timeStr}${capped ? ' (capped at 4h)' : ''}</div>
+      <div>Your managers earned</div>
+      <div class="offline-payout">+${fmt(amount)}</div>
+      <div class="offline-note">Offline production runs at 50% efficiency.<br>Hire more managers to maximize.</div>
+      <button class="offline-collect" id="offlineCollect">COLLECT</button>
+    `;
+    offlineModal.classList.add('show');
+    document.getElementById('offlineCollect').addEventListener('click', () => {
+      offlineModal.classList.remove('show');
+    });
+  }
+  if (offlineEarnings > 0) {
+    showOfflineModal(offlineEarnings, offlineSeconds);
+  }
+
+  // ===== SETTINGS =====
+  function setupDecorations() {
+    // Remove existing decoration layer
+    const existing = document.getElementById('decoLayer');
+    if (existing) existing.remove();
+    const t = activeTheme();
+    if (!t.decoration) return;
+    const layer = document.createElement('div');
+    layer.id = 'decoLayer';
+    layer.className = 'decoration-layer';
+    document.body.appendChild(layer);
+
+    if (t.decoration === 'spooky') {
+      // Bats fly across the screen
+      const symbols = ['🦇', '🦇', '🕷️', '👻'];
+      for (let i = 0; i < 6; i++) {
+        const p = document.createElement('div');
+        p.className = 'deco-particle';
+        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.setProperty('--y', (10 + Math.random() * 70) + 'vh');
+        p.style.animationDuration = (10 + Math.random() * 8) + 's';
+        p.style.animationDelay = (-Math.random() * 18) + 's';
+        layer.appendChild(p);
+      }
+    } else if (t.decoration === 'festive') {
+      // Snow falls
+      const symbols = ['❄', '❅', '❆', '✦'];
+      for (let i = 0; i < 35; i++) {
+        const p = document.createElement('div');
+        p.className = 'deco-particle';
+        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = (10 + Math.random() * 14) + 'px';
+        p.style.opacity = 0.4 + Math.random() * 0.5;
+        p.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        p.style.animationDuration = (8 + Math.random() * 8) + 's';
+        p.style.animationDelay = (-Math.random() * 16) + 's';
+        layer.appendChild(p);
+      }
+    } else if (t.decoration === 'spring') {
+      // Cherry blossom petals fall
+      const symbols = ['🌸', '🌸', '🌷', '🌼', '🍃'];
+      for (let i = 0; i < 28; i++) {
+        const p = document.createElement('div');
+        p.className = 'deco-particle';
+        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = (12 + Math.random() * 12) + 'px';
+        p.style.opacity = 0.6 + Math.random() * 0.4;
+        p.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+        p.style.animationDuration = (10 + Math.random() * 10) + 's';
+        p.style.animationDelay = (-Math.random() * 20) + 's';
+        layer.appendChild(p);
+      }
+    } else if (t.decoration === 'summer') {
+      // Bubbles rise from below — sun, beach symbols
+      const symbols = ['☀️', '🌴', '🐚', '🏖️', '⛱️', '🐠', '🌊'];
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'deco-particle';
+        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = (14 + Math.random() * 12) + 'px';
+        p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+        p.style.animationDuration = (10 + Math.random() * 8) + 's';
+        p.style.animationDelay = (-Math.random() * 18) + 's';
+        layer.appendChild(p);
+      }
+    } else if (t.decoration === 'kitty') {
+      const symbols = ['🐾', '✨', '🐱', '🎀', '🧶'];
+      for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'deco-particle';
+        p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = (12 + Math.random() * 18) + 'px';
+        p.style.opacity = 0.4 + Math.random() * 0.45;
+        p.style.setProperty('--drift', (Math.random() * 120 - 60) + 'px');
+        p.style.animationDuration = (10 + Math.random() * 8) + 's';
+        p.style.animationDelay = (-Math.random() * 18) + 's';
+        layer.appendChild(p);
+      }
+    }
+  }
+
+  function applySettings() {
+    document.body.classList.toggle('compact', !!state.settings.compact);
+    if (masterGain) {
+      masterGain.gain.value = (state.settings.volume / 100) * 0.5;
+    }
+    applyThemeStyles();
+  }
+  let settingsBuilt = false;
+  function renderSettings() {
+    document.querySelectorAll('[data-setting]').forEach(group => {
+      const key = group.dataset.setting;
+      group.querySelectorAll('.setting-opt').forEach(btn => {
+        const v = btn.dataset.val;
+        const cur = String(state.settings[key]);
+        btn.classList.toggle('active', cur === v);
+        if (!settingsBuilt) {
+          btn.addEventListener('click', () => {
+            let val = btn.dataset.val;
+            if (val === 'true') val = true;
+            else if (val === 'false') val = false;
+            state.settings[key] = val;
+            // First time enabling sound — kickstart audio context
+            if (key === 'sound' && val === true) {
+              initAudio();
+              if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+              playSfx('upgrade');  // confirmation chime
+            }
+            applySettings();
+            renderSettings();
+            Array.from(bizContainer.children).forEach(el => { el._cache = {}; });
+            render();
+            save();
+          });
+        }
+      });
+    });
+    // Volume slider
+    const vol = document.getElementById('volSlider');
+    if (vol && !vol._wired) {
+      vol.value = state.settings.volume;
+      vol.addEventListener('input', () => {
+        state.settings.volume = parseInt(vol.value);
+        applySettings();
+      });
+      vol.addEventListener('change', () => {
+        save();
+        if (state.settings.sound) playSfx('coin');  // preview at new volume
+      });
+      vol._wired = true;
+    } else if (vol) {
+      vol.value = state.settings.volume;
+    }
+    settingsBuilt = true;
+  }
+
+  // ===== META SHOP =====
+  function buyMetaUpgrade(id) {
+    const m = META_UPGRADES.find(x => x.id === id);
+    if (!m) return;
+    const lvl = metaLevel(id);
+    if (lvl >= m.maxLevel) return;
+    const cost = m.cost(lvl);
+    if (state.investors < cost) { playSfx('error'); return; }
+    state.investors -= cost;
+    state.spentInvestors += cost;
+    state.metaUpgrades[id] = lvl + 1;
+    showToast(`${m.name} → Level ${lvl + 1}!`);
+    playSfx('upgrade');
+    renderMetaShop();
+    render();
+    save();
+  }
+
+  let metaBuilt = false;
+  function buildMetaCards() {
+    metaList.innerHTML = '';
+    META_UPGRADES.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'meta-card';
+      card.dataset.mid = m.id;
+      card.innerHTML = `
+        <div class="meta-icon">${m.icon}</div>
+        <div>
+          <div class="meta-name">${m.name}</div>
+          <div class="meta-desc" data-mdesc></div>
+          <div class="meta-level" data-mlvl></div>
+        </div>
+        <button class="meta-buy" data-mbuy></button>
+      `;
+      card.querySelector('button').addEventListener('click', () => buyMetaUpgrade(m.id));
+      metaList.appendChild(card);
+    });
+    metaBuilt = true;
+  }
+
+  function renderMetaShop() {
+    if (!metaBuilt) buildMetaCards();
+    Array.from(metaList.children).forEach((card, i) => {
+      const m = META_UPGRADES[i];
+      const lvl = metaLevel(m.id);
+      const maxed = lvl >= m.maxLevel;
+      const cost = maxed ? 0 : m.cost(lvl);
+      const canAfford = state.investors >= cost;
+
+      const desc = card.querySelector('[data-mdesc]');
+      const newDesc = m.desc(lvl);
+      if (desc.textContent !== newDesc) desc.textContent = newDesc;
+
+      const lvlEl = card.querySelector('[data-mlvl]');
+      const newLvl = `LVL ${lvl} / ${m.maxLevel}`;
+      if (lvlEl.textContent !== newLvl) lvlEl.textContent = newLvl;
+
+      if (card.classList.contains('maxed') !== maxed) card.classList.toggle('maxed', maxed);
+
+      const btn = card.querySelector('[data-mbuy]');
+      const newBtn = maxed ? 'MAXED ✓' : `${cost} ⭐`;
+      if (btn.textContent !== newBtn) btn.textContent = newBtn;
+      if (btn.classList.contains('maxed') !== maxed) btn.classList.toggle('maxed', maxed);
+      const wantDisabled = maxed || !canAfford;
+      if (btn.disabled !== wantDisabled) btn.disabled = wantDisabled;
+    });
+  }
+
+  function save() {
+    try {
+      localStorage.setItem('tycoon-empire-save', JSON.stringify({
+        cash: state.cash,
+        totalEarned: state.totalEarned,
+        lifetimeEarned: state.lifetimeEarned,
+        totalClicks: state.totalClicks,
+        playTime: Date.now() - state.startTime,
+        lastSaveTime: Date.now(),
+        investors: state.investors,
+        spentInvestors: state.spentInvestors,
+        purchasedUpgrades: state.purchasedUpgrades,
+        metaUpgrades: state.metaUpgrades,
+        settings: state.settings,
+        businesses: state.businesses,
+      }));
+    } catch(e) { /* localStorage may be unavailable */ }
+  }
+
+  // ===== MAIN LOOP =====
+  applySettings();
+  buildBusinesses();
+  render();
+
+  let lastTime = performance.now();
+  function loop(now) {
+    const dt = Math.min((now - lastTime) / 1000, 0.5);
+    lastTime = now;
+    tick(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  setInterval(save, 5000);
+  window.addEventListener('beforeunload', save);
+</script>
+</body>
+</html>
