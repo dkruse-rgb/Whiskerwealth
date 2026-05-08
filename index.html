@@ -17,7 +17,7 @@
 fetch('https://raw.githubusercontent.com/dkruse-rgb/Whiskerwealth/0b1a50501e34be77ac05445a33ddf9094fc8e4ba/index.html')
   .then(r=>r.text())
   .then(html=>{
-    const titleAsset = 'assets/file_00000000e9b471f5b7ff81a5a7812c87.png';
+    const titleAsset = 'assets/whisker_wealth_smooth.png';
     html = html.replace(/function perkBadge\(q\)\{[\s\S]*?\}\nfunction pMult/, "function perkBadge(q){let pm=ownedProfitPerk(q),sm=ownedSpeedPerk(q),parts=[];if(pm>1)parts.push('💰×'+pm);if(sm>1)parts.push('⚡×'+sm);return parts.length?' · '+parts.join(' · '):''}\nfunction pMult");
     html = html.replace(`'+(o.run?'Making purrfits… '+Math.floor(pct)+'%':'Click paw to earn '+fmt(rev(i)))+'`, `'+(o.run?('+'+fmt(rev(i))+' · '+Math.floor(pct)+'%'):('Tap paw · +'+fmt(rev(i))))+'`);
     html = html.replace('</style>', `
